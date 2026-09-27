@@ -39,4 +39,16 @@ public class Piece {
         state = PieceState.BASE;
         direction = null;
     }
+
+    public Colour getColour() {
+        return colour;
+    }
+
+    public boolean isOnStandardPath() {
+        return state == PieceState.STANDARD_PATH;
+    }
+
+    public boolean isHome() {
+        return state == PieceState.HOME;
+    }
 }

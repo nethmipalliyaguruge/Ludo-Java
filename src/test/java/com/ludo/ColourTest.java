@@ -13,7 +13,7 @@ class ColourTest {
     @Test
     void eachApproachCellIsTwoCellsBeforeItsStart() {
         for (Colour colour : Colour.values()) {
-            int twoCellsBeforeStart = Math.floorMod(colour.getStartCell() - 2, Board.STANDARD_PATH_LENGTH);
+            int twoCellsBeforeStart = Math.floorMod(colour.getStartCell() - 2, BoardTest.STANDARD_PATH_LENGTH);
             assertEquals(twoCellsBeforeStart, colour.getApproachCell());
         }
     }
@@ -22,7 +22,7 @@ class ColourTest {
     void everyStartCellIsOnTheStandardPath() {
         for (Colour colour : Colour.values()) {
             int startCell = colour.getStartCell();
-            assertTrue(startCell >= 0 && startCell < Board.STANDARD_PATH_LENGTH);
+            assertTrue(startCell >= 0 && startCell < BoardTest.STANDARD_PATH_LENGTH);
         }
     }
 }
