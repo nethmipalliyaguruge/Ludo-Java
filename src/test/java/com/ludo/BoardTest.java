@@ -48,4 +48,23 @@ class BoardTest {
         red.getPieces().getFirst().moveToStart(RED_START, Direction.CLOCKWISE);
         assertFalse(board.isBlockAt(RED_START));
     }
+
+    @Test
+    void opponentsAtReturnsOnlyPiecesOfOtherColours() {
+        Player blue = new Player(Colour.BLUE);
+        Board boardWithTwoPlayers = new Board(List.of(red, blue));
+        Piece redOne = red.getPieces().getFirst();
+        Piece blueOne = blue.getPieces().getFirst();
+        redOne.moveToStart(RED_START, Direction.CLOCKWISE);
+        blueOne.moveToStart(RED_START, Direction.CLOCKWISE);
+
+        List<Piece> opponents = boardWithTwoPlayers.opponentsAt(RED_START, Colour.RED);
+
+        assertEquals(List.of(blueOne), opponents);
+    }
+
+    @Test
+    void hasOwnPieceAtIsFalseForAnEmptyCell(){
+        assertFalse(board.hasOwnPieceAt(RED_START, Colour.RED));
+    }
 }

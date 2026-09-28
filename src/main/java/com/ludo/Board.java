@@ -29,4 +29,24 @@ public class Board {
     public boolean isBlockAt(int cell) {
         return piecesAt(cell).size() >= MIN_PIECES_FOR_BLOCK;
     }
+
+    public List<Piece> opponentsAt(int cell, Colour ownColour) {
+        List<Piece> opponents = new ArrayList<>();
+        for (Piece piece : piecesAt(cell)) {
+            if (piece.getColour() != ownColour) {
+                opponents.add(piece);
+            }
+        }
+        return opponents;
+    }
+
+
+    public boolean hasOwnPieceAt(int cell, Colour ownColour) {
+        for (Piece piece : piecesAt(cell)) {
+            if (piece.getColour() == ownColour){
+                return true;
+            }
+        }
+        return false;
+    }
 }
