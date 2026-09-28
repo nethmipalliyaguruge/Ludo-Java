@@ -6,22 +6,32 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DirectionTest {
     @Test
-    void clockwiseMoveAdvancesByRollValue(){
+    void clockwiseMoveAdvancesByRollValue() {
         assertEquals(13, Direction.CLOCKWISE.move(10, 3));
     }
 
     @Test
-    void clockwiseMovePastLastCellWrapsToStartOfPath(){
+    void clockwiseMovePastLastCellWrapsToStartOfPath() {
         assertEquals(2, Direction.CLOCKWISE.move(50, 4));
     }
 
     @Test
-    void counterClockwiseMoveGoesBackByRollValue(){
+    void counterClockwiseMoveGoesBackByRollValue() {
         assertEquals(14, Direction.COUNTER_CLOCKWISE.move(20, 6));
     }
 
     @Test
-    void counterClockwiseMovePastCellZeroWrapsToEndOfPath(){
+    void counterClockwiseMovePastCellZeroWrapsToEndOfPath() {
         assertEquals(49, Direction.COUNTER_CLOCKWISE.move(2, 5));
+    }
+
+    @Test
+    void clockwiseStepsFromRedStartToRedApproachIsFifty() {
+        assertEquals(50, Direction.CLOCKWISE.stepsBetween(26, 24));
+    }
+
+    @Test
+    void counterclockwiseStepsFromRedStartToRedApproachIsTwo() {
+        assertEquals(2, Direction.COUNTER_CLOCKWISE.stepsBetween(26, 24));
     }
 }

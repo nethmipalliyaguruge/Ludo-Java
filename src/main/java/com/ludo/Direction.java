@@ -13,4 +13,8 @@ public enum Direction {
     public int move(int fromCell, int steps) {
         return Math.floorMod(fromCell + sign * steps, Board.STANDARD_PATH_LENGTH);
     }
+
+    public int stepsBetween(int fromCell, int toCell) {
+        return Math.floorMod(sign * (toCell - fromCell), Board.STANDARD_PATH_LENGTH);
+    }
 }

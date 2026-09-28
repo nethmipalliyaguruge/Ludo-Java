@@ -6,23 +6,34 @@ public class Piece {
     private PieceState state;
     private int position;
     private Direction direction;
+    private int homePathIndex;
+    private int captureCount;
 
     public Piece(Colour colour, int number) {
         this.colour = colour;
         this.number = number;
         this.state = PieceState.BASE;
+        this.direction = Direction.CLOCKWISE;
     }
 
     public String getName() {
         return colour.getLetter() + number;
     }
 
-    public boolean isInBase() {
-        return state == PieceState.BASE;
+    public Colour getColour() {
+        return colour;
     }
 
     public int getPosition() {
         return position;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public int getCaptureCount() {
+        return captureCount;
     }
 
     public void moveToStart(int startCell, Direction direction) {
@@ -32,16 +43,27 @@ public class Piece {
     }
 
     public void move(int steps) {
-        position = direction.move(position, steps);
+        if (!canMoveBy(steps)) {
+            throw new IllegalMoveException(
+                    getName() + " cannot move " + steps + " steps from " + describeLocation());
+        }
+        if (isInHomePath()) {
+            advanceInHomePath(steps);
+        } else if (staysOnStandardPathAfter(steps)) {
+            position = cellAfter(steps);
+        } else {
+            enterHomePath(steps - stepsToApproach());
+        }
     }
 
     public void returnToBase() {
+        homePathIndex = 0;
+        captureCount = 0;
         state = PieceState.BASE;
-        direction = null;
     }
 
-    public Colour getColour() {
-        return colour;
+    public boolean isInBase() {
+        return state == PieceState.BASE;
     }
 
     public boolean isOnStandardPath() {
@@ -50,5 +72,58 @@ public class Piece {
 
     public boolean isHome() {
         return state == PieceState.HOME;
+    }
+
+    public boolean isInHomePath() {
+        return state == PieceState.HOME_PATH;
+    }
+
+    public void recordCapture() {
+        captureCount++;
+    }
+
+    public int cellAfter(int steps) {
+        return direction.move(position, steps);
+    }
+
+    private int stepsToApproach() {
+        return direction.stepsBetween(getPosition(), colour.getApproachCell());
+    }
+
+    public boolean canEnterHomePath() {
+        return true;
+    }
+
+    public boolean staysOnStandardPathAfter(int steps) {
+        return !canEnterHomePath() || steps <= stepsToApproach();
+    }
+
+    public boolean canMoveBy(int steps) {
+        if (isInHomePath()) {
+            return homePathIndex + steps <= Board.HOME_PATH_LENGTH;
+        }
+        return isOnStandardPath();
+    }
+
+    public String describeLocation() {
+        return switch (state) {
+            case BASE -> "BASE";
+            case STANDARD_PATH -> String.valueOf(position);
+            case HOME_PATH -> colour.name().toLowerCase() + "homepath" + homePathIndex;
+            case HOME -> "HOME";
+        };
+    }
+
+    private void enterHomePath(int stepsPastApproach) {
+        state = PieceState.HOME_PATH;
+        homePathIndex = 0;
+        advanceInHomePath(stepsPastApproach - 1);
+    }
+
+    private void advanceInHomePath(int steps) {
+        homePathIndex += steps;
+        if (homePathIndex == Board.HOME_PATH_LENGTH) {
+            state = PieceState.HOME;
+        }
     }
 }
