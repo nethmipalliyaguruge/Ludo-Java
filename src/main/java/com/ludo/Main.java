@@ -6,8 +6,8 @@ import com.ludo.model.Player;
 import com.ludo.output.ConsoleReporter;
 import com.ludo.random.RandomCoinToss;
 import com.ludo.random.RandomDice;
-import com.ludo.strategy.FirstAvailableMoveStrategy;
 import com.ludo.strategy.PlayerStrategy;
+import com.ludo.strategy.StrategyFactory;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -26,7 +26,7 @@ public class Main {
         Map<Colour, PlayerStrategy> strategies = new EnumMap<>(Colour.class);
         for (Colour colour : Colour.values()) {
             players.add(new Player(colour));
-            strategies.put(colour, new FirstAvailableMoveStrategy());
+            strategies.put(colour, StrategyFactory.forColour(colour));
         }
 
         LudoGame game = new LudoGame(players, strategies,

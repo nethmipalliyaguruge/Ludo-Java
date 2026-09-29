@@ -4,6 +4,9 @@ import com.ludo.event.GameEventListener;
 import com.ludo.model.Board;
 import com.ludo.model.Piece;
 import com.ludo.model.Player;
+import com.ludo.random.Dice;
+
+import java.util.List;
 
 public abstract class PieceMove implements Move {
     protected final Player owner;
@@ -28,12 +31,18 @@ public abstract class PieceMove implements Move {
         return piece;
     }
 
-    public boolean capturesOpponent() {
-        return landsOnStandardPath()
-                && !board.opponentsAt(landingCell(), piece.getColour()).isEmpty();
+    public List<Piece> opponentsCaptured() {
+        if (!landsOnStandardPath()) {
+            return List.of();
+        }
+        return board.opponentsAt(landingCell(), piece.getColour());
     }
 
-    public boolean landsOnOwnPiece() {
+    public boolean capturesOpponent() {
+        return !opponentsCaptured().isEmpty();
+    }
+
+    public boolean createsBlock() {
         return landsOnStandardPath()
                 && board.hasOwnPieceAt(landingCell(), piece.getColour());
     }
@@ -55,5 +64,13 @@ public abstract class PieceMove implements Move {
             piece.recordCapture();
             events.onCapture(owner, piece, opponent);
         }
+    }
+
+    public boolean isEntry(){
+        return piece.isInBase();
+    }
+
+    public boolean breaksBlock(){
+        return piece.isOnStandardPath() && board.isBlockAt(piece.getPosition());
     }
 }

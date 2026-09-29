@@ -10,6 +10,7 @@ public class Piece {
     private Direction direction;
     private int homePathIndex;
     private int captureCount;
+    private static final int STEPS_FROM_BASE_TO_HOME = Board.STANDARD_PATH_LENGTH + Board.HOME_PATH_LENGTH;
 
     public Piece(Colour colour, int number) {
         this.colour = colour;
@@ -94,6 +95,15 @@ public class Piece {
 
     public boolean canEnterHomePath() {
         return true;
+    }
+
+    public int stepsToHome() {
+        return switch (state) {
+            case BASE -> STEPS_FROM_BASE_TO_HOME;
+            case STANDARD_PATH -> stepsToApproach() + Board.HOME_PATH_LENGTH + 1;
+            case HOME_PATH -> Board.HOME_PATH_LENGTH - homePathIndex;
+            case HOME -> 0;
+        };
     }
 
     public boolean staysOnStandardPathAfter(int steps) {

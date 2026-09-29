@@ -24,7 +24,7 @@ public class MoveGenerator {
         List<PieceMove> moves = new ArrayList<>();
         for (Piece piece : player.getPieces()) {
             Optional<PieceMove> candidate = candidateMove(player, piece, roll);
-            if (candidate.isPresent() && !candidate.get().landsOnOwnPiece()) {
+            if (candidate.isPresent() && !candidate.get().createsBlock()) {
                 moves.add(candidate.get());
             }
         }
