@@ -109,10 +109,10 @@ public class Piece {
 
     public String describeLocation() {
         return switch (state) {
-            case BASE -> "BASE";
+            case BASE -> "Base";
             case STANDARD_PATH -> String.valueOf(position);
             case HOME_PATH -> colour.name().toLowerCase() + "homepath" + homePathIndex;
-            case HOME -> "HOME";
+            case HOME -> "Home";
         };
     }
 

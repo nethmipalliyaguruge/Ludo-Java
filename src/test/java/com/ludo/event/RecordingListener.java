@@ -14,6 +14,16 @@ public class RecordingListener implements GameEventListener {
     }
 
     @Override
+    public void onRoll(Player player, int roll) {
+        events.add(player.getColour() + " rolled " + roll);
+    }
+
+    @Override
+    public void onPieceEnteredBoard(Player owner, Piece piece) {
+        events.add("entered " + piece.getName());
+    }
+
+    @Override
     public void onPieceMoved(Piece piece, String from, String to, int steps) {
         events.add("moved " + piece.getName() + " " + from + "->" + to);
     }
@@ -26,5 +36,10 @@ public class RecordingListener implements GameEventListener {
     @Override
     public void onNoMoveAvailable(Player player) {
         events.add("no move " + player.getColour());
+    }
+
+    @Override
+    public void onThirdSixIgnored(Player player) {
+        events.add("third six " + player.getColour());
     }
 }

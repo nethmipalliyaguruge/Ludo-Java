@@ -7,7 +7,11 @@ public class RandomDice implements Dice {
     private final Random random;
 
     public RandomDice(long seed) {
-        this.random = new Random(seed);
+        this(new Random(seed));
+    }
+
+    public RandomDice(Random random) {
+        this.random = random;
     }
 
     @Override
@@ -15,4 +19,3 @@ public class RandomDice implements Dice {
         return random.nextInt(FACES) + 1;
     }
 }
-
