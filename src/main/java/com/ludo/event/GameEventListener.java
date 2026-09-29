@@ -45,4 +45,7 @@ public interface GameEventListener {
 
     default void onRoundEnd(int round, List<PlayerStatus> statuses) {
     }
+
+    default void onGameOver(List<Player> ranking) {
+    }
 }

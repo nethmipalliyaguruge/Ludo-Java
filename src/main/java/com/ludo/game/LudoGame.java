@@ -39,6 +39,16 @@ public class LudoGame {
         this.turnManager = new TurnManager(this.players);
     }
 
+    private List<Player> finalRanking() {
+        List<Player> ranking = new ArrayList<>(finishingOrder);
+        for (Player player : players) {
+            if (!finishingOrder.contains(player)) {
+                ranking.add(player);
+            }
+        }
+        return ranking;
+    }
+
     public List<Player> play() {
         events.onGameStart(players);
         List<Player> roundOrder = turnManager.decideRoundOrder(dice, events);
@@ -48,6 +58,7 @@ public class LudoGame {
             playRound(roundOrder);
             events.onRoundEnd(round, currentStatuses());
         }
+        events.onGameOver(finalRanking());
         return List.copyOf(finishingOrder);
     }
 

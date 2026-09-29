@@ -98,6 +98,16 @@ public class ConsoleReporter implements GameEventListener {
     }
 
     @Override
+    public void onGameOver(List<Player> ranking) {
+        out.println();
+        out.println("======== FINAL RESULT ========");
+        out.println("--" + ranking.getFirst().getColour() + " IS THE WINNER--");
+        for (int i = 0; i < ranking.size(); i++) {
+            out.println("Place " + (i + 1) + ": " + name(ranking.get(i).getColour()));
+        }
+    }
+
+    @Override
     public void onRoundEnd(int round, List<PlayerStatus> statuses) {
         out.println();
         out.println("End of round " + round);
