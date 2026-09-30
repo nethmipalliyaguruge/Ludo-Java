@@ -70,16 +70,13 @@ public class BlockMove extends PieceMove {
         return block.stream().max(Comparator.comparingInt(Piece::stepsToHome)).orElseThrow();
     }
 
-    public boolean isEntry() {
-        return piece.isInBase();
-    }
-
+    @Override
     public boolean movesWholeBlock() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean breaksBlock() {
-        return true;
+        return false;
     }
 }

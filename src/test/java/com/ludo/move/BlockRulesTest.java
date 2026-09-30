@@ -1,18 +1,15 @@
 package com.ludo.move;
 
 import com.ludo.event.RecordingListener;
-import com.ludo.model.Board;
-import com.ludo.model.Colour;
-import com.ludo.model.Direction;
-import com.ludo.model.Piece;
-import com.ludo.model.Player;
+import com.ludo.model.*;
 import com.ludo.random.FixedCoinToss;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 class BlockRulesTest {
     private Player green;

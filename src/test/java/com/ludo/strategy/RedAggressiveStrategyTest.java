@@ -1,6 +1,5 @@
 package com.ludo.strategy;
 
-import com.ludo.game.PieceStatus;
 import com.ludo.model.*;
 import com.ludo.move.EnterBoardMove;
 import com.ludo.move.PieceMove;
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class RedAggressiveStrategyTest {
     private Player red;

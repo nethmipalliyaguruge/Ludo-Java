@@ -74,6 +74,7 @@ public abstract class PieceMove implements Move {
             movedPieces().forEach(Piece::recordCapture);
         }
     }
+
     public boolean isEntry() {
         return piece.isInBase();
     }

@@ -1,16 +1,14 @@
 package com.ludo.output;
 
-import com.ludo.model.Colour;
-import com.ludo.model.Direction;
-import com.ludo.model.Piece;
-import com.ludo.model.Player;
+import com.ludo.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConsoleReporterTest {
     private ByteArrayOutputStream output;
@@ -45,5 +43,43 @@ class ConsoleReporterTest {
         reporter.onStalemate(120);
 
         assertTrue(output.toString().contains("Stalemate after round 120"));
+    }
+
+    @Test
+    void mysteryCellSpawnIsReportedInTheBriefsFormat() {
+        reporter.onMysteryCellSpawned(12, 4);
+
+        assertEquals("A mystery cell has spawned in location 12 and will be at this location for the next four rounds.",
+                output.toString().trim());
+    }
+
+    @Test
+    void teleportIsReportedWithTheNewLocationAndDestination() {
+        Piece redOne = new Player(Colour.RED).getPieces().getFirst();
+        redOne.moveToStart(7, Direction.CLOCKWISE);
+
+        reporter.onTeleported(redOne, TeleportDestination.ALPHA);
+
+        assertEquals("Red player lands on a mystery cell and is teleported to 7."
+                + System.lineSeparator() + "Red piece R1 teleported to Alpha.", output.toString().trim());
+    }
+
+    @Test
+    void energisedPieceIsReportedInTheBriefsFormat() {
+        Piece blueTwo = new Player(Colour.BLUE).getPieces().get(1);
+
+        reporter.onEnergised(blueTwo);
+
+        assertEquals("Blue piece B2 feels energized, and movement speed doubles.", output.toString().trim());
+    }
+
+    @Test
+    void blockedPieceIsReportedWithTheBlockingPiece() {
+        Piece greenOne = new Player(Colour.GREEN).getPieces().getFirst();
+        Piece redOne = new Player(Colour.RED).getPieces().getFirst();
+
+        reporter.onPieceBlocked(greenOne, "0", "6", redOne);
+
+        assertEquals("Green piece G1 is blocked from moving from 0 to 6 by Red piece R1.", output.toString().trim());
     }
 }

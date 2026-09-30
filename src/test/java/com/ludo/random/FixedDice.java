@@ -7,12 +7,12 @@ import java.util.Queue;
 public class FixedDice implements Dice {
     private final Queue<Integer> rolls;
 
-    public FixedDice(Integer...rolls){
+    public FixedDice(Integer... rolls) {
         this.rolls = new ArrayDeque<>(List.of(rolls));
     }
 
     @Override
-    public int roll(){
+    public int roll() {
         return rolls.remove();
     }
 }

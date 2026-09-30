@@ -10,7 +10,7 @@ public class FixedCoinToss implements CoinToss {
     }
 
     @Override
-    public Direction toss(){
+    public Direction toss() {
         return result;
     }
 }

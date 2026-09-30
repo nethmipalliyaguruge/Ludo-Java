@@ -11,11 +11,7 @@ import com.ludo.random.RandomPicker;
 import com.ludo.strategy.PlayerStrategy;
 import com.ludo.strategy.StrategyFactory;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class Main {
     private static final long DEFAULT_SEED = 42L;

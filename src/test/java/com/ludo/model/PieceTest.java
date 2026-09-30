@@ -96,11 +96,11 @@ class PieceTest {
     }
 
     @Test
-    void pieceOnItsStartCellIsFiftySixStepsFromHome(){
-        Piece piece = new Piece(Colour.RED,1);
-        piece.moveToStart(26,Direction.CLOCKWISE);
+    void pieceOnItsStartCellIsFiftySixStepsFromHome() {
+        Piece piece = new Piece(Colour.RED, 1);
+        piece.moveToStart(26, Direction.CLOCKWISE);
 
-        assertEquals(56,piece.stepsToHome());
+        assertEquals(56, piece.stepsToHome());
     }
 
     @Test

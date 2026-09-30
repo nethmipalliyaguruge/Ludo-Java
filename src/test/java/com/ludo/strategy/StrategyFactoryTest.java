@@ -5,7 +5,7 @@ import com.ludo.model.MysteryCell;
 import com.ludo.random.FixedPicker;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 class StrategyFactoryTest {
     private final MysteryCell mysteryCell = new MysteryCell(new FixedPicker());

@@ -19,10 +19,6 @@ public class ConsoleReporter implements GameEventListener {
         this.out = out;
     }
 
-    private static String inWords(int number) {
-        return number == MysteryCell.ROUNDS_AT_ONE_CELL ? "four" : String.valueOf(number);
-    }
-
     @Override
     public void onGameStart(List<Player> players) {
         for (Player player : players) {
@@ -250,5 +246,9 @@ public class ConsoleReporter implements GameEventListener {
     private static String joinWithAnd(List<String> items) {
         String allButLast = String.join(", ", items.subList(0, items.size() - 1));
         return allButLast + ", and " + items.getLast();
+    }
+
+    private static String inWords(int number) {
+        return number == MysteryCell.ROUNDS_AT_ONE_CELL ? "four" : String.valueOf(number);
     }
 }

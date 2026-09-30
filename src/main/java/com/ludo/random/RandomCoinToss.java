@@ -4,11 +4,11 @@ import com.ludo.model.Direction;
 
 import java.util.Random;
 
-public class RandomCoinToss implements CoinToss{
+public class RandomCoinToss implements CoinToss {
     private final Random random;
 
     public RandomCoinToss(Random random) {
-        this.random =random;
+        this.random = random;
     }
 
     @Override
