@@ -66,6 +66,7 @@ class PieceTest {
     void piecePassingApproachCellEntersHomePath() {
         Piece piece = new Piece(Colour.RED, 2);
         piece.moveToStart(22, Direction.CLOCKWISE);
+        piece.recordCapture();
         piece.move(4);
         assertEquals("redhomepath1", piece.describeLocation());
     }
@@ -82,6 +83,7 @@ class PieceTest {
     void pieceInHomePathReachesHomeWithExactRoll() {
         Piece piece = new Piece(Colour.RED, 2);
         piece.moveToStart(24, Direction.CLOCKWISE);
+        piece.recordCapture();
         piece.move(4);
         piece.move(2);
         assertTrue(piece.isHome());
@@ -91,5 +93,28 @@ class PieceTest {
     void movingPieceInBaseThrowsIllegalMoveException() {
         Piece piece = new Piece(Colour.RED, 4);
         assertThrows(IllegalMoveException.class, () -> piece.move(3));
+    }
+
+    @Test
+    void pieceOnItsStartCellIsFiftySixStepsFromHome(){
+        Piece piece = new Piece(Colour.RED,1);
+        piece.moveToStart(26,Direction.CLOCKWISE);
+
+        assertEquals(56,piece.stepsToHome());
+    }
+
+    @Test
+    void counterClockwisePieceEntersHomePathOnSecondPass() {
+        Piece red = new Piece(Colour.RED, 1);
+        red.moveToStart(26, Direction.COUNTER_CLOCKWISE);
+        red.recordCapture();
+        red.move(3);
+        for (int lap = 0; lap < 8; lap++) {
+            red.move(6);
+        }
+
+        red.move(5);
+
+        assertEquals("redhomepath1", red.describeLocation());
     }
 }

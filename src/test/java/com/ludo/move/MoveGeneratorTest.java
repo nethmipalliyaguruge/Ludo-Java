@@ -50,6 +50,7 @@ class MoveGeneratorTest {
     void pieceInHomePathHasNoMoveIfRollOvershootsHome() {
         Piece redOne = red.getPieces().getFirst();
         redOne.moveToStart(24, Direction.CLOCKWISE);
+        redOne.recordCapture();
         redOne.move(4);
 
         List<PieceMove> moves = generator.legalMoves(red, 5);

@@ -11,6 +11,7 @@ public class Piece {
     private int homePathIndex;
     private int captureCount;
     private static final int STEPS_FROM_BASE_TO_HOME = Board.STANDARD_PATH_LENGTH + Board.HOME_PATH_LENGTH;
+    private int approachPasses;
 
     public Piece(Colour colour, int number) {
         this.colour = colour;
@@ -53,6 +54,7 @@ public class Piece {
         if (isInHomePath()) {
             advanceInHomePath(steps);
         } else if (staysOnStandardPathAfter(steps)) {
+            countApproachPass(steps);
             position = cellAfter(steps);
         } else {
             enterHomePath(steps - stepsToApproach());
@@ -62,6 +64,7 @@ public class Piece {
     public void returnToBase() {
         homePathIndex = 0;
         captureCount = 0;
+        approachPasses = 0;
         state = PieceState.BASE;
     }
 
@@ -94,7 +97,9 @@ public class Piece {
     }
 
     public boolean canEnterHomePath() {
-        return true;
+        boolean hasCaptured = captureCount > 0;
+        boolean readyForHomePath = direction == Direction.CLOCKWISE || approachPasses > 0;
+        return hasCaptured && readyForHomePath;
     }
 
     public int stepsToHome() {
@@ -136,6 +141,13 @@ public class Piece {
         homePathIndex += steps;
         if (homePathIndex == Board.HOME_PATH_LENGTH) {
             state = PieceState.HOME;
+        }
+    }
+
+    private void countApproachPass(int steps) {
+        int distance = stepsToApproach();
+        if (distance > 0 && steps >= distance) {
+            approachPasses++;
         }
     }
 }
