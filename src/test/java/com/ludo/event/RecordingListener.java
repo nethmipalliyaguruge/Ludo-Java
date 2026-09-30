@@ -2,6 +2,7 @@ package com.ludo.event;
 
 import com.ludo.model.Piece;
 import com.ludo.model.Player;
+import com.ludo.model.TeleportDestination;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,5 +42,20 @@ public class RecordingListener implements GameEventListener {
     @Override
     public void onThirdSixIgnored(Player player) {
         events.add("third six " + player.getColour());
+    }
+
+    @Override
+    public void onMysteryCellSpawned(int cell, int rounds) {
+        events.add("mystery spawned at " + cell);
+    }
+
+    @Override
+    public void onMysteryCellCountdown(int cell, int roundsLeft) {
+        events.add("mystery at " + cell + " for " + roundsLeft);
+    }
+
+    @Override
+    public void onTeleported(Piece piece, TeleportDestination destination) {
+        events.add(piece.getName() + " teleported to " + destination.getLabel());
     }
 }

@@ -3,6 +3,7 @@ package com.ludo.game;
 import com.ludo.event.GameEventListener;
 import com.ludo.model.Board;
 import com.ludo.model.Colour;
+import com.ludo.model.MysteryCell;
 import com.ludo.model.Player;
 import com.ludo.move.Move;
 import com.ludo.move.MoveGenerator;
@@ -26,18 +27,22 @@ public class LudoGame {
     private final Map<Colour, PlayerStrategy> strategies;
     private final Dice dice;
     private final GameEventListener events;
+    private final Board board;
+    private final MysteryCell mysteryCell;
     private final MoveGenerator moveGenerator;
     private final TurnManager turnManager;
     private final List<Player> finishingOrder = new ArrayList<>();
     private static final int ROUNDS_WITHOUT_PROGRESS_FOR_STALEMATE = 50;
 
     public LudoGame(List<Player> players, Map<Colour, PlayerStrategy> strategies,
-                    Dice dice, CoinToss coin, GameEventListener events) {
+                    Dice dice, CoinToss coin, MysteryCell mysteryCell, GameEventListener events) {
         this.players = List.copyOf(players);
         this.strategies = Map.copyOf(strategies);
         this.dice = dice;
         this.events = events;
-        this.moveGenerator = new MoveGenerator(new Board(this.players), coin);
+        this.mysteryCell = mysteryCell;
+        this.board = new Board(this.players);
+        this.moveGenerator = new MoveGenerator(board, coin);
         this.turnManager = new TurnManager(this.players);
     }
 
@@ -67,6 +72,7 @@ public class LudoGame {
             List<PlayerStatus> after = currentStatuses();
             roundsWithoutProgress = after.equals(before) ? roundsWithoutProgress + 1 : 0;
             events.onRoundEnd(round, after);
+            mysteryCell.endRound(board, events);
         }
         if (!isOver()) {
             events.onStalemate(round);
@@ -89,6 +95,7 @@ public class LudoGame {
             Move move = chooseMove(player, roll);
             boolean earnedBonusRoll = move.capturesOpponent();
             move.execute(events);
+            move.movedPiece().ifPresent(piece -> mysteryCell.teleportIfLandedOn(piece, events));
             recordIfFinished(player);
             rollAgain = (roll == SIX || earnedBonusRoll) && !player.hasWon();
         }

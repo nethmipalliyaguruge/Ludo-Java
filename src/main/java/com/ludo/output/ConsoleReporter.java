@@ -3,10 +3,7 @@ package com.ludo.output;
 import com.ludo.event.GameEventListener;
 import com.ludo.game.PieceStatus;
 import com.ludo.game.PlayerStatus;
-import com.ludo.model.Colour;
-import com.ludo.model.Direction;
-import com.ludo.model.Piece;
-import com.ludo.model.Player;
+import com.ludo.model.*;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -20,6 +17,10 @@ public class ConsoleReporter implements GameEventListener {
 
     public ConsoleReporter(PrintStream out) {
         this.out = out;
+    }
+
+    private static String inWords(int number) {
+        return number == MysteryCell.ROUNDS_AT_ONE_CELL ? "four" : String.valueOf(number);
     }
 
     @Override
@@ -105,6 +106,26 @@ public class ConsoleReporter implements GameEventListener {
         for (int i = 0; i < ranking.size(); i++) {
             out.println("Place " + (i + 1) + ": " + name(ranking.get(i).getColour()));
         }
+    }
+
+    @Override
+    public void onMysteryCellSpawned(int cell, int rounds) {
+        out.println("A mystery cell has spawned in location " + cell
+                + " and will be at this location for the next " + inWords(rounds) + " rounds.");
+    }
+
+    @Override
+    public void onMysteryCellCountdown(int cell, int roundsLeft) {
+        out.println("The mystery cell is at " + cell + " and will be at that location for the next "
+                + roundsLeft + " rounds.");
+    }
+
+    @Override
+    public void onTeleported(Piece piece, TeleportDestination destination) {
+        String colour = name(piece.getColour());
+        out.println(colour + " player lands on a mystery cell and is teleported to "
+                + piece.describeLocation() + ".");
+        out.println(colour + " piece " + piece.getName() + " teleported to " + destination.getLabel() + ".");
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.ludo.event;
 import com.ludo.game.PlayerStatus;
 import com.ludo.model.Piece;
 import com.ludo.model.Player;
+import com.ludo.model.TeleportDestination;
 
 import java.util.List;
 
@@ -56,6 +57,15 @@ public interface GameEventListener {
     }
 
     default void onBlockedThrowIgnored(Piece piece) {
+    }
+
+    default void onMysteryCellSpawned(int cell, int rounds) {
+    }
+
+    default void onMysteryCellCountdown(int cell, int roundsLeft) {
+    }
+
+    default void onTeleported(Piece piece, TeleportDestination destination) {
     }
 
     default void onStalemate(int round) {

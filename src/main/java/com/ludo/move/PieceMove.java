@@ -6,6 +6,7 @@ import com.ludo.model.Piece;
 import com.ludo.model.Player;
 
 import java.util.List;
+import java.util.Optional;
 
 public abstract class PieceMove implements Move {
     protected final Player owner;
@@ -64,6 +65,11 @@ public abstract class PieceMove implements Move {
             piece.recordCapture();
             events.onCapture(owner, piece, opponent);
         }
+    }
+
+    @Override
+    public Optional<Piece> movedPiece() {
+        return Optional.of(piece);
     }
 
     public boolean isEntry() {

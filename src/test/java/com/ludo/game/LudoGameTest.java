@@ -1,14 +1,8 @@
 package com.ludo.game;
 
 import com.ludo.event.RecordingListener;
-import com.ludo.model.Colour;
-import com.ludo.model.Direction;
-import com.ludo.model.Piece;
-import com.ludo.model.Player;
-import com.ludo.random.FixedCoinToss;
-import com.ludo.random.FixedDice;
-import com.ludo.random.RandomCoinToss;
-import com.ludo.random.RandomDice;
+import com.ludo.model.*;
+import com.ludo.random.*;
 import com.ludo.strategy.FirstAvailableMoveStrategy;
 import com.ludo.strategy.PlayerStrategy;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,8 +66,7 @@ class LudoGameTest {
     @Test
     void completeGameEndsWithThreePlayersFinished() {
         Random random = new Random(42L);
-        LudoGame game = new LudoGame(players, strategies, new RandomDice(random),
-                new RandomCoinToss(random), listener);
+        LudoGame game = new LudoGame(players, strategies, new RandomDice(random), new RandomCoinToss(random), new MysteryCell(new RandomPicker(random)), listener);
 
         List<Player> finishingOrder = game.play();
 
@@ -81,7 +74,7 @@ class LudoGameTest {
     }
 
     private LudoGame gameWithDice(FixedDice dice) {
-        return new LudoGame(players, strategies, dice, new FixedCoinToss(Direction.CLOCKWISE), listener);
+        return new LudoGame(players, strategies, dice, new FixedCoinToss(Direction.CLOCKWISE), new MysteryCell(new FixedPicker()), listener);
     }
 
     @Test

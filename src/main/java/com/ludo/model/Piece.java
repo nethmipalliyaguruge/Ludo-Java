@@ -150,4 +150,11 @@ public class Piece {
             approachPasses++;
         }
     }
+
+    public void teleportTo(int cell) {
+        if (!isOnStandardPath()) {
+            throw new IllegalMoveException(getName() + " can only be teleported from the standard path");
+        }
+        position = cell;
+    }
 }

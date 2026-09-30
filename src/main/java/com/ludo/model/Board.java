@@ -27,6 +27,17 @@ public class Board {
         return found;
     }
 
+    public boolean hasPiecesOnStandardPath() {
+        for (Player player : players) {
+            for (Piece piece : player.getPieces()) {
+                if (piece.isOnStandardPath()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean isBlockAt(int cell) {
         return piecesAt(cell).size() >= MIN_PIECES_FOR_BLOCK;
     }
