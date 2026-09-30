@@ -3,6 +3,7 @@ package com.ludo.move;
 import com.ludo.event.GameEventListener;
 import com.ludo.model.Piece;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface Move {
@@ -14,5 +15,9 @@ public interface Move {
 
     default Optional<Piece> movedPiece() {
         return Optional.empty();
+    }
+
+    default List<Piece> movedPieces() {
+        return List.of();
     }
 }

@@ -1,6 +1,7 @@
 package com.ludo.strategy;
 
 import com.ludo.model.*;
+import com.ludo.move.BlockMove;
 import com.ludo.move.EnterBoardMove;
 import com.ludo.move.PieceMove;
 import com.ludo.move.StepMove;
@@ -50,5 +51,21 @@ class GreenBlockingStrategyTest {
         PieceMove chosen = strategy.chooseMove(List.of(breakTheBlockMove, freePieceMove), green);
 
         assertSame(freePieceMove, chosen);
+    }
+
+    @Test
+    void prefersMovingForwardWithTheWholeBlock() {
+        Piece greenOne = green.getPieces().get(0);
+        Piece greenTwo = green.getPieces().get(1);
+        Piece greenThree = green.getPieces().get(2);
+        greenOne.moveToStart(39, Direction.CLOCKWISE);
+        greenTwo.moveToStart(39, Direction.COUNTER_CLOCKWISE);
+        greenThree.moveToStart(10, Direction.CLOCKWISE);
+        PieceMove freePiece = new StepMove(green, greenThree, board, 4);
+        PieceMove wholeBlock = new BlockMove(green, List.of(greenOne, greenTwo), board, 4);
+
+        PieceMove chosen = strategy.chooseMove(List.of(freePiece, wholeBlock), green);
+
+        assertSame(wholeBlock, chosen);
     }
 }

@@ -88,16 +88,34 @@ public class LudoGame {
             applyBriefingRule(player, roll);
             sixesInARow = (roll == SIX) ? sixesInARow + 1 : 0;
             if (sixesInARow == SIXES_BEFORE_ROLL_IS_IGNORED) {
-                events.onThirdSixIgnored(player);
+                handleThirdSix(player);
                 return;
             }
             Move move = chooseMove(player, roll);
             boolean earnedBonusRoll = move.capturesOpponent();
-            move.execute(events);
-            move.movedPiece().ifPresent(piece -> mysteryCell.teleportIfLandedOn(piece, events));
-            recordIfFinished(player);
+            perform(player, move);
             rollAgain = (roll == SIX || earnedBonusRoll) && !player.hasWon();
         }
+    }
+
+    private void handleThirdSix(Player player) {
+        List<PieceMove> breakingMoves = moveGenerator.blockadeBreakingMoves(player);
+        if (breakingMoves.isEmpty()) {
+            events.onThirdSixIgnored(player);
+            return;
+        }
+        events.onBlockadeBroken(player);
+        for (PieceMove move : breakingMoves) {
+            perform(player, move);
+        }
+    }
+
+    private void perform(Player player, Move move) {
+        move.execute(events);
+        for (Piece piece : move.movedPieces()) {
+            mysteryCell.teleportIfLandedOn(piece, events);
+        }
+        recordIfFinished(player);
     }
 
     private void applyBriefingRule(Player player, int roll) {

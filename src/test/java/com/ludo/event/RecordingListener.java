@@ -1,5 +1,6 @@
 package com.ludo.event;
 
+import com.ludo.model.Direction;
 import com.ludo.model.Piece;
 import com.ludo.model.Player;
 import com.ludo.model.TeleportDestination;
@@ -87,5 +88,15 @@ public class RecordingListener implements GameEventListener {
     @Override
     public void onSentFromGammaToBeta(Piece piece) {
         events.add(piece.getName() + " sent from Gamma to Beta");
+    }
+
+    @Override
+    public void onBlockMoved(Player owner, List<Piece> block, String from, String to, int steps, Direction direction) {
+        events.add("block moved " + from + "->" + to);
+    }
+
+    @Override
+    public void onBlockadeBroken(Player player) {
+        events.add("blockade broken " + player.getColour());
     }
 }

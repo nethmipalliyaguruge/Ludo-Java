@@ -1,6 +1,7 @@
 package com.ludo.event;
 
 import com.ludo.game.PlayerStatus;
+import com.ludo.model.Direction;
 import com.ludo.model.Piece;
 import com.ludo.model.Player;
 import com.ludo.model.TeleportDestination;
@@ -84,6 +85,12 @@ public interface GameEventListener {
     }
 
     default void onSentFromGammaToBeta(Piece piece) {
+    }
+
+    default void onBlockMoved(Player owner, List<Piece> block, String from, String to, int steps, Direction direction) {
+    }
+
+    default void onBlockadeBroken(Player player) {
     }
 
     default void onStalemate(int round) {

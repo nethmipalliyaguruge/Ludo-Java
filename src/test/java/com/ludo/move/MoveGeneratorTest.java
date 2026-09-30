@@ -57,4 +57,31 @@ class MoveGeneratorTest {
         assertEquals(2, moves.size());
         assertTrue(moves.getFirst().createsBlock());
     }
+
+    @Test
+    void breakingATwoPieceBlockadeMovesOnePieceSixUnits() {
+        Player red = new Player(Colour.RED);
+        red.getPieces().get(0).moveToStart(30, Direction.CLOCKWISE);
+        red.getPieces().get(1).moveToStart(30, Direction.CLOCKWISE);
+        MoveGenerator breaker = new MoveGenerator(new Board(List.of(red)), new FixedCoinToss(Direction.CLOCKWISE));
+
+        List<PieceMove> moves = breaker.blockadeBreakingMoves(red);
+
+        assertEquals(1, moves.size());
+        assertEquals(36, moves.getFirst().landingCell());
+    }
+
+    @Test
+    void breakingAThreePieceBlockadeSharesTheSixUnits() {
+        Player red = new Player(Colour.RED);
+        red.getPieces().get(0).moveToStart(30, Direction.CLOCKWISE);
+        red.getPieces().get(1).moveToStart(30, Direction.CLOCKWISE);
+        red.getPieces().get(2).moveToStart(30, Direction.CLOCKWISE);
+        MoveGenerator breaker = new MoveGenerator(new Board(List.of(red)), new FixedCoinToss(Direction.CLOCKWISE));
+
+        List<PieceMove> moves = breaker.blockadeBreakingMoves(red);
+
+        assertEquals(2, moves.size());
+        assertEquals(33, moves.getFirst().landingCell());
+    }
 }

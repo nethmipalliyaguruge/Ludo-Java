@@ -115,4 +115,19 @@ class LudoGameTest {
         assertTrue(red1.isInBase());
         assertTrue(listener.getEvents().contains("R1 sent to base from briefing"));
     }
+
+    @Test
+    void thirdSixWithABlockadeBreaksTheBlockade() {
+        List<Piece> pieces = red.getPieces();
+        pieces.get(0).moveToStart(30, Direction.CLOCKWISE);
+        pieces.get(1).moveToStart(30, Direction.CLOCKWISE);
+        pieces.get(2).moveToStart(40, Direction.CLOCKWISE);
+        pieces.get(3).moveToStart(40, Direction.CLOCKWISE);
+        LudoGame game = gameWithDice(new FixedDice(6, 6, 6));
+
+        game.playTurn(red);
+
+        assertTrue(listener.getEvents().contains("blockade broken RED"));
+        assertEquals(46, pieces.get(3).getPosition());
+    }
 }

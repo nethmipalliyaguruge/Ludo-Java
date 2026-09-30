@@ -166,6 +166,25 @@ public class ConsoleReporter implements GameEventListener {
     }
 
     @Override
+    public void onBlockMoved(Player owner, List<Piece> block, String from, String to, int steps,
+                             Direction direction) {
+        List<String> names = new ArrayList<>();
+        for (Piece piece : block) {
+            names.add(piece.getName());
+        }
+        out.println(name(owner.getColour()) + " moves the block of " + String.join(" and ", names)
+                + " from location " + from + " to " + to + " by " + steps + " units in "
+                + describe(direction) + " direction.");
+    }
+
+    @Override
+    public void onBlockadeBroken(Player player) {
+        out.println(name(player.getColour()) + " rolled a six three times in a row while holding a blockade."
+                + " The blockade is broken by moving all pieces but one in their original direction"
+                + " by six units in total.");
+    }
+
+    @Override
     public void onStalemate(int round) {
         out.println("Stalemate after round " + round + ": no piece has moved for many rounds because blocks"
                 + " are stopping every remaining piece. Remaining players are ranked by distance to home.");

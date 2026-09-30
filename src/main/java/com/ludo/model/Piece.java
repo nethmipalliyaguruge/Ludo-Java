@@ -183,4 +183,11 @@ public class Piece {
         }
         position = cell;
     }
+
+    public void moveWithBlockTo(int cell) {
+        if (!isOnStandardPath()) {
+            throw new IllegalMoveException(getName() + " can only move with a block on the standard path");
+        }
+        position = cell;
+    }
 }

@@ -6,7 +6,6 @@ import com.ludo.model.Piece;
 import com.ludo.model.Player;
 
 import java.util.List;
-import java.util.Optional;
 
 public abstract class PieceMove implements Move {
     protected final Player owner;
@@ -27,13 +26,13 @@ public abstract class PieceMove implements Move {
         captureOpponentsOnLandingCell(events);
     }
 
-    @Override
-    public boolean capturesOpponent() {
-        return !opponentsCaptured().isEmpty();
-    }
-
     public Piece getPiece() {
         return piece;
+    }
+
+    @Override
+    public List<Piece> movedPieces() {
+        return List.of(piece);
     }
 
     public List<Piece> opponentsCaptured() {
@@ -42,6 +41,12 @@ public abstract class PieceMove implements Move {
         }
         return board.opponentsAt(landingCell(), piece.getColour());
     }
+
+    @Override
+    public boolean capturesOpponent() {
+        return !opponentsCaptured().isEmpty();
+    }
+
 
     public boolean createsBlock() {
         return landsOnStandardPath()
@@ -60,23 +65,25 @@ public abstract class PieceMove implements Move {
         if (!piece.isOnStandardPath()) {
             return;
         }
-        for (Piece opponent : board.opponentsAt(piece.getPosition(), piece.getColour())) {
+        List<Piece> captured = board.opponentsAt(piece.getPosition(), piece.getColour());
+        for (Piece opponent : captured) {
             opponent.returnToBase();
-            piece.recordCapture();
             events.onCapture(owner, piece, opponent);
         }
+        if (!captured.isEmpty()) {
+            movedPieces().forEach(Piece::recordCapture);
+        }
     }
-
-    @Override
-    public Optional<Piece> movedPiece() {
-        return Optional.of(piece);
-    }
-
     public boolean isEntry() {
         return piece.isInBase();
+    }
+
+    public boolean movesWholeBlock() {
+        return false;
     }
 
     public boolean breaksBlock() {
         return piece.isOnStandardPath() && board.isBlockAt(piece.getPosition());
     }
+
 }

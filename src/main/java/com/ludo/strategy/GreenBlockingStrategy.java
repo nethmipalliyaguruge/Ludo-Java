@@ -18,6 +18,11 @@ public class GreenBlockingStrategy implements PlayerStrategy {
         if (entry.isPresent()) {
             return entry.get();
         }
+        // NEW: move the whole block forward if possible (brief 2.1.2)
+        Optional<PieceMove> blockMove = options.stream().filter(PieceMove::movesWholeBlock).findFirst();
+        if (blockMove.isPresent()) {
+            return blockMove.get();
+        }
         List<PieceMove> keepBlocks = options.stream().filter(move -> !move.breaksBlock()).toList();
         return MoveRanking.closestToHome(keepBlocks.isEmpty() ? options : keepBlocks);
     }
