@@ -39,4 +39,11 @@ class ConsoleReporterTest {
         assertEquals("Green moves piece G2 from location 39 to 35 by 4 units in counter-clockwise direction.",
                 output.toString().trim());
     }
+
+    @Test
+    void stalemateMessageShowsTheRound() {
+        reporter.onStalemate(120);
+
+        assertTrue(output.toString().contains("Stalemate after round 120"));
+    }
 }

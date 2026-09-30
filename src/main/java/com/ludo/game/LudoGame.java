@@ -13,6 +13,7 @@ import com.ludo.random.Dice;
 import com.ludo.strategy.PlayerStrategy;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ public class LudoGame {
     private final MoveGenerator moveGenerator;
     private final TurnManager turnManager;
     private final List<Player> finishingOrder = new ArrayList<>();
+    private static final int ROUNDS_WITHOUT_PROGRESS_FOR_STALEMATE = 50;
 
     public LudoGame(List<Player> players, Map<Colour, PlayerStrategy> strategies,
                     Dice dice, CoinToss coin, GameEventListener events) {
@@ -41,11 +43,14 @@ public class LudoGame {
 
     private List<Player> finalRanking() {
         List<Player> ranking = new ArrayList<>(finishingOrder);
+        List<Player> unfinished = new ArrayList<>();
         for (Player player : players) {
             if (!finishingOrder.contains(player)) {
-                ranking.add(player);
+                unfinished.add(player);
             }
         }
+        unfinished.sort(Comparator.comparingInt(Player::totalStepsToHome));
+        ranking.addAll(unfinished);
         return ranking;
     }
 
@@ -53,10 +58,18 @@ public class LudoGame {
         events.onGameStart(players);
         List<Player> roundOrder = turnManager.decideRoundOrder(dice, events);
         int round = 0;
-        while (!isOver() && round < MAX_ROUNDS) {
+        int roundsWithoutProgress = 0;
+        while (!isOver() && round < MAX_ROUNDS
+                && roundsWithoutProgress < ROUNDS_WITHOUT_PROGRESS_FOR_STALEMATE) {
             round++;
+            List<PlayerStatus> before = currentStatuses();
             playRound(roundOrder);
-            events.onRoundEnd(round, currentStatuses());
+            List<PlayerStatus> after = currentStatuses();
+            roundsWithoutProgress = after.equals(before) ? roundsWithoutProgress + 1 : 0;
+            events.onRoundEnd(round, after);
+        }
+        if (!isOver()) {
+            events.onStalemate(round);
         }
         events.onGameOver(finalRanking());
         return List.copyOf(finishingOrder);

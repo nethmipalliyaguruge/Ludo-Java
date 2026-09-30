@@ -37,4 +37,11 @@ class PlayerTest {
         assertThrows(UnsupportedOperationException.class, () -> player.getPieces().clear());
 
     }
+
+    @Test
+    void newPlayerIsTwoHundredAndTwentyEightStepsFromHome() {
+        Player player = new Player(Colour.RED);
+
+        assertEquals(228, player.totalStepsToHome());
+    }
 }

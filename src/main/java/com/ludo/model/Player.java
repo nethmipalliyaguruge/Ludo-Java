@@ -53,4 +53,12 @@ public class Player {
         }
         return count;
     }
+
+    public int totalStepsToHome() {
+        int total = 0;
+        for (Piece piece : pieces) {
+            total += piece.stepsToHome();
+        }
+        return total;
+    }
 }

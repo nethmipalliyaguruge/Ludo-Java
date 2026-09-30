@@ -57,4 +57,7 @@ public interface GameEventListener {
 
     default void onBlockedThrowIgnored(Piece piece) {
     }
+
+    default void onStalemate(int round) {
+    }
 }
