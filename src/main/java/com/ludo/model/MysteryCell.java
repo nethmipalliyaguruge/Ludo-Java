@@ -11,6 +11,7 @@ public class MysteryCell {
     private static final int ROUNDS_BEFORE_FIRST_SPAWN = 2;
 
     private final Picker picker;
+    private final TeleportEffects effects;
     private boolean onBoard = false;
     private int cell;
     private int roundsLeft;
@@ -18,6 +19,7 @@ public class MysteryCell {
 
     public MysteryCell(Picker picker) {
         this.picker = picker;
+        this.effects = new TeleportEffects(picker);
     }
 
     public boolean isAt(int position) {
@@ -39,6 +41,7 @@ public class MysteryCell {
         TeleportDestination destination = picker.pickOneOf(List.of(TeleportDestination.values()));
         destination.sendHere(piece);
         events.onTeleported(piece, destination);
+        effects.applyOnArrival(piece, destination, events);
     }
 
     private void waitForFirstSpawn(Board board, GameEventListener events) {

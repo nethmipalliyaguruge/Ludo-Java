@@ -78,14 +78,15 @@ class MysteryCellTest {
 
     @Test
     void pieceLandingOnTheMysteryCellIsTeleported() {
-        MysteryCell mysteryCell = spawnedAt(10, TeleportDestination.ALPHA);
+        MysteryCell mysteryCell = spawnedAt(10, TeleportDestination.ALPHA, true);
         Piece red1 = red.getPieces().getFirst();
         red1.teleportTo(10);
 
         mysteryCell.teleportIfLandedOn(red1, listener);
 
         assertEquals(7, red1.getPosition());
-        assertEquals("R1 teleported to Alpha", listener.getEvents().getLast());
+        assertEquals(List.of("mystery spawned at 10", "R1 teleported to Alpha", "R1 energised"),
+                listener.getEvents());
     }
 
     @Test

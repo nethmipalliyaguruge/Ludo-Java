@@ -88,4 +88,31 @@ class LudoGameTest {
 
         assertEquals(List.of("RED rolled 3", "moved R1 26->29", "R1 captured B1", "RED rolled 2", "moved R1 29->31"), listener.getEvents());
     }
+
+    @Test
+    void energisedPieceMovesDoubleTheRoll() {
+        Piece red1 = red.getPieces().getFirst();
+        red1.moveToStart(26, Direction.CLOCKWISE);
+        red1.applyCondition(new EnergisedCondition(4));
+        LudoGame game = gameWithDice(new FixedDice(4));
+
+        game.playTurn(red);
+
+        assertEquals(34, red1.getPosition());
+    }
+
+    @Test
+    void rollingThreeThreesInARowDuringBriefingSendsThePieceToBase() {
+        Piece red1 = red.getPieces().getFirst();
+        red1.moveToStart(26, Direction.CLOCKWISE);
+        red1.applyCondition(new BriefingCondition(4, 0));
+        LudoGame game = gameWithDice(new FixedDice(3, 3, 3));
+
+        game.playTurn(red);
+        game.playTurn(red);
+        game.playTurn(red);
+
+        assertTrue(red1.isInBase());
+        assertTrue(listener.getEvents().contains("R1 sent to base from briefing"));
+    }
 }

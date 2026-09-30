@@ -1,10 +1,7 @@
 package com.ludo.game;
 
 import com.ludo.event.GameEventListener;
-import com.ludo.model.Board;
-import com.ludo.model.Colour;
-import com.ludo.model.MysteryCell;
-import com.ludo.model.Player;
+import com.ludo.model.*;
 import com.ludo.move.Move;
 import com.ludo.move.MoveGenerator;
 import com.ludo.move.NoMove;
@@ -69,6 +66,7 @@ public class LudoGame {
             round++;
             List<PlayerStatus> before = currentStatuses();
             playRound(roundOrder);
+            players.forEach(Player::endRound);
             List<PlayerStatus> after = currentStatuses();
             roundsWithoutProgress = after.equals(before) ? roundsWithoutProgress + 1 : 0;
             events.onRoundEnd(round, after);
@@ -87,6 +85,7 @@ public class LudoGame {
         while (rollAgain) {
             int roll = dice.roll();
             events.onRoll(player, roll);
+            applyBriefingRule(player, roll);
             sixesInARow = (roll == SIX) ? sixesInARow + 1 : 0;
             if (sixesInARow == SIXES_BEFORE_ROLL_IS_IGNORED) {
                 events.onThirdSixIgnored(player);
@@ -98,6 +97,16 @@ public class LudoGame {
             move.movedPiece().ifPresent(piece -> mysteryCell.teleportIfLandedOn(piece, events));
             recordIfFinished(player);
             rollAgain = (roll == SIX || earnedBonusRoll) && !player.hasWon();
+        }
+    }
+
+    private void applyBriefingRule(Player player, int roll) {
+        for (Piece piece : player.getPieces()) {
+            piece.noteOwnerRoll(roll);
+            if (piece.mustReturnToBase()) {
+                piece.returnToBase();
+                events.onSentToBaseFromBriefing(piece);
+            }
         }
     }
 

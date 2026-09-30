@@ -40,6 +40,12 @@ public class Player {
         return PIECES_PER_PLAYER - countPiecesInBase() - countPiecesHome();
     }
 
+    public void endRound() {
+        for (Piece piece : pieces) {
+            piece.endRound();
+        }
+    }
+
     public boolean hasWon() {
         return countPiecesHome() == PIECES_PER_PLAYER;
     }

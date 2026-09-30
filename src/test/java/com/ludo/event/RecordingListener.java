@@ -58,4 +58,34 @@ public class RecordingListener implements GameEventListener {
     public void onTeleported(Piece piece, TeleportDestination destination) {
         events.add(piece.getName() + " teleported to " + destination.getLabel());
     }
+
+    @Override
+    public void onEnergised(Piece piece) {
+        events.add(piece.getName() + " energised");
+    }
+
+    @Override
+    public void onSick(Piece piece) {
+        events.add(piece.getName() + " sick");
+    }
+
+    @Override
+    public void onBriefing(Piece piece) {
+        events.add(piece.getName() + " in briefing");
+    }
+
+    @Override
+    public void onSentToBaseFromBriefing(Piece piece) {
+        events.add(piece.getName() + " sent to base from briefing");
+    }
+
+    @Override
+    public void onTurnedCounterClockwise(Piece piece) {
+        events.add(piece.getName() + " turned counter-clockwise");
+    }
+
+    @Override
+    public void onSentFromGammaToBeta(Piece piece) {
+        events.add(piece.getName() + " sent from Gamma to Beta");
+    }
 }

@@ -36,20 +36,26 @@ public class MoveGenerator {
         if (piece.isInBase() && roll == ENTRY_ROLL && !startIsBlocked(piece)) {
             return Optional.of(new EnterBoardMove(player, piece, board, coin));
         }
-        if (piece.canMoveBy(roll) && board.stepsToOpponentBlock(piece, roll).isEmpty()) {
-            return Optional.of(new StepMove(player, piece, board, roll));
+        int steps = piece.stepsFor(roll);
+        if (canWalk(piece, steps) && board.stepsToOpponentBlock(piece, steps).isEmpty()) {
+            return Optional.of(new StepMove(player, piece, board, steps));
         }
         return Optional.empty();
     }
 
     private Optional<PieceMove> blockedMove(Player player, int roll) {
         for (Piece piece : player.getPieces()) {
-            OptionalInt stepsToBlock = board.stepsToOpponentBlock(piece, roll);
-            if (piece.canMoveBy(roll) && stepsToBlock.isPresent()) {
-                return Optional.of(new BlockedMove(player, piece, board, roll, stepsToBlock.getAsInt() - 1));
+            int steps = piece.stepsFor(roll);
+            OptionalInt stepsToBlock = board.stepsToOpponentBlock(piece, steps);
+            if (canWalk(piece, steps) && stepsToBlock.isPresent()) {
+                return Optional.of(new BlockedMove(player, piece, board, steps, stepsToBlock.getAsInt() - 1));
             }
         }
         return Optional.empty();
+    }
+
+    private boolean canWalk(Piece piece, int steps) {
+        return steps > 0 && piece.canMoveBy(steps);
     }
 
     private boolean startIsBlocked(Piece piece) {

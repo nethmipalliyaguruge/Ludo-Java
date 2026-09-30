@@ -68,6 +68,24 @@ public interface GameEventListener {
     default void onTeleported(Piece piece, TeleportDestination destination) {
     }
 
+    default void onEnergised(Piece piece) {
+    }
+
+    default void onSick(Piece piece) {
+    }
+
+    default void onBriefing(Piece piece) {
+    }
+
+    default void onSentToBaseFromBriefing(Piece piece) {
+    }
+
+    default void onTurnedCounterClockwise(Piece piece) {
+    }
+
+    default void onSentFromGammaToBeta(Piece piece) {
+    }
+
     default void onStalemate(int round) {
     }
 }

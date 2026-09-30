@@ -129,6 +129,43 @@ public class ConsoleReporter implements GameEventListener {
     }
 
     @Override
+    public void onEnergised(Piece piece) {
+        out.println(name(piece.getColour()) + " piece " + piece.getName()
+                + " feels energized, and movement speed doubles.");
+    }
+
+    @Override
+    public void onSick(Piece piece) {
+        out.println(name(piece.getColour()) + " piece " + piece.getName()
+                + " feels sick, and movement speed halves.");
+    }
+
+    @Override
+    public void onBriefing(Piece piece) {
+        out.println(name(piece.getColour()) + " piece " + piece.getName()
+                + " attends briefing and cannot move for four rounds.");
+    }
+
+    @Override
+    public void onSentToBaseFromBriefing(Piece piece) {
+        out.println(name(piece.getColour()) + " piece " + piece.getName()
+                + " is movement-restricted and has rolled three consecutively. Teleporting piece "
+                + piece.getName() + " to base.");
+    }
+
+    @Override
+    public void onTurnedCounterClockwise(Piece piece) {
+        out.println("The " + name(piece.getColour()) + " piece " + piece.getName()
+                + ", which was moving clockwise, has changed to moving counterclockwise.");
+    }
+
+    @Override
+    public void onSentFromGammaToBeta(Piece piece) {
+        out.println("The " + name(piece.getColour()) + " piece " + piece.getName()
+                + " is moving in a counterclockwise direction. Teleporting to Beta from Gamma.");
+    }
+
+    @Override
     public void onStalemate(int round) {
         out.println("Stalemate after round " + round + ": no piece has moved for many rounds because blocks"
                 + " are stopping every remaining piece. Remaining players are ranked by distance to home.");

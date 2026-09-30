@@ -8,6 +8,7 @@ public class Piece {
     private PieceState state;
     private int position;
     private Direction direction;
+    private PieceCondition condition = PieceCondition.NORMAL;
     private int homePathIndex;
     private int captureCount;
     private static final int STEPS_FROM_BASE_TO_HOME = Board.STANDARD_PATH_LENGTH + Board.HOME_PATH_LENGTH;
@@ -66,6 +67,7 @@ public class Piece {
         captureCount = 0;
         approachPasses = 0;
         state = PieceState.BASE;
+        condition = PieceCondition.NORMAL;
     }
 
     public boolean isInBase() {
@@ -82,6 +84,30 @@ public class Piece {
 
     public boolean isInHomePath() {
         return state == PieceState.HOME_PATH;
+    }
+
+    public void turnCounterClockwise() {
+        direction = Direction.COUNTER_CLOCKWISE;
+    }
+
+    public int stepsFor(int roll) {
+        return condition.stepsFor(roll);
+    }
+
+    public void applyCondition(PieceCondition newCondition) {
+        condition = newCondition;
+    }
+
+    public void endRound() {
+        condition = condition.afterRound();
+    }
+
+    public void noteOwnerRoll(int roll) {
+        condition = condition.afterOwnerRoll(roll);
+    }
+
+    public boolean mustReturnToBase() {
+        return condition.mustReturnToBase();
     }
 
     public void recordCapture() {
