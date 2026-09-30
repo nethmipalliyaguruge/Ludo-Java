@@ -8,6 +8,7 @@ import com.ludo.random.CoinToss;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 public class MoveGenerator {
     private static final int ENTRY_ROLL = 6;
@@ -23,21 +24,35 @@ public class MoveGenerator {
     public List<PieceMove> legalMoves(Player player, int roll) {
         List<PieceMove> moves = new ArrayList<>();
         for (Piece piece : player.getPieces()) {
-            Optional<PieceMove> candidate = candidateMove(player, piece, roll);
-            if (candidate.isPresent() && !candidate.get().createsBlock()) {
-                moves.add(candidate.get());
-            }
+            candidateMove(player, piece, roll).ifPresent(moves::add);
+        }
+        if (moves.isEmpty()) {
+            blockedMove(player, roll).ifPresent(moves::add);
         }
         return moves;
     }
 
     private Optional<PieceMove> candidateMove(Player player, Piece piece, int roll) {
-        if (piece.isInBase() && roll == ENTRY_ROLL) {
+        if (piece.isInBase() && roll == ENTRY_ROLL && !startIsBlocked(piece)) {
             return Optional.of(new EnterBoardMove(player, piece, board, coin));
         }
-        if (piece.canMoveBy(roll)) {
+        if (piece.canMoveBy(roll) && board.stepsToOpponentBlock(piece, roll).isEmpty()) {
             return Optional.of(new StepMove(player, piece, board, roll));
         }
         return Optional.empty();
+    }
+
+    private Optional<PieceMove> blockedMove(Player player, int roll) {
+        for (Piece piece : player.getPieces()) {
+            OptionalInt stepsToBlock = board.stepsToOpponentBlock(piece, roll);
+            if (piece.canMoveBy(roll) && stepsToBlock.isPresent()) {
+                return Optional.of(new BlockedMove(player, piece, board, roll, stepsToBlock.getAsInt() - 1));
+            }
+        }
+        return Optional.empty();
+    }
+
+    private boolean startIsBlocked(Piece piece) {
+        return board.isOpponentBlockAt(piece.getColour().getStartCell(), piece.getColour());
     }
 }

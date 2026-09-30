@@ -117,6 +117,25 @@ public class ConsoleReporter implements GameEventListener {
         out.println();
     }
 
+    @Override
+    public void onPieceBlocked(Piece piece, String from, String to, Piece blocker) {
+        out.println(name(piece.getColour()) + " piece " + piece.getName() + " is blocked from moving from "
+                + from + " to " + to + " by " + name(blocker.getColour()) + " piece " + blocker.getName() + ".");
+    }
+
+    @Override
+    public void onMovedUpToBlock(Piece piece) {
+        out.println(name(piece.getColour()) + " does not have other pieces in the board to move instead of the"
+                + " blocked piece. Moved the piece to square " + piece.describeLocation()
+                + " which is the cell before the block.");
+    }
+
+    @Override
+    public void onBlockedThrowIgnored(Piece piece) {
+        out.println(name(piece.getColour()) + " does not have other pieces in the board to move instead of the"
+                + " blocked piece. Ignoring the throw and moving on to the next player.");
+    }
+
     private void printStatus(PlayerStatus status) {
         String colour = name(status.colour());
         out.println(colour + " player now has " + status.piecesOnBoard() + "/" + PIECES_PER_PLAYER

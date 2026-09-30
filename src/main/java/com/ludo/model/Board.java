@@ -2,6 +2,7 @@ package com.ludo.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 
 public class Board {
     public static final int STANDARD_PATH_LENGTH = 52;
@@ -40,13 +41,28 @@ public class Board {
         return opponents;
     }
 
-
     public boolean hasOwnPieceAt(int cell, Colour ownColour) {
         for (Piece piece : piecesAt(cell)) {
-            if (piece.getColour() == ownColour){
+            if (piece.getColour() == ownColour) {
                 return true;
             }
         }
         return false;
+    }
+
+    public boolean isOpponentBlockAt(int cell, Colour ownColour) {
+        return isBlockAt(cell) && piecesAt(cell).getFirst().getColour() != ownColour;
+    }
+
+    public OptionalInt stepsToOpponentBlock(Piece piece, int steps) {
+        if (!piece.isOnStandardPath()) {
+            return OptionalInt.empty();
+        }
+        for (int step = 1; step <= steps && piece.staysOnStandardPathAfter(step); step++) {
+            if (isOpponentBlockAt(piece.cellAfter(step), piece.getColour())) {
+                return OptionalInt.of(step);
+            }
+        }
+        return OptionalInt.empty();
     }
 }

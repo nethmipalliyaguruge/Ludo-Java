@@ -36,17 +36,6 @@ class MoveGeneratorTest {
     }
 
     @Test
-    void moveLandingOnOwnPieceIsNotAllowed() {
-        red.getPieces().get(0).moveToStart(26, Direction.CLOCKWISE);
-        red.getPieces().get(1).moveToStart(29, Direction.CLOCKWISE);
-
-        List<PieceMove> moves = generator.legalMoves(red, 3);
-
-        assertEquals(1, moves.size());
-        assertEquals("R2", moves.getFirst().getPiece().getName());
-    }
-
-    @Test
     void pieceInHomePathHasNoMoveIfRollOvershootsHome() {
         Piece redOne = red.getPieces().getFirst();
         redOne.moveToStart(24, Direction.CLOCKWISE);
@@ -56,5 +45,16 @@ class MoveGeneratorTest {
         List<PieceMove> moves = generator.legalMoves(red, 5);
 
         assertTrue(moves.isEmpty());
+    }
+
+    @Test
+    void landingOnOwnPieceIsAllowedAndFormsABlock() {
+        red.getPieces().get(0).moveToStart(26, Direction.CLOCKWISE);
+        red.getPieces().get(1).moveToStart(29, Direction.CLOCKWISE);
+
+        List<PieceMove> moves = generator.legalMoves(red, 3);
+
+        assertEquals(2, moves.size());
+        assertTrue(moves.getFirst().createsBlock());
     }
 }

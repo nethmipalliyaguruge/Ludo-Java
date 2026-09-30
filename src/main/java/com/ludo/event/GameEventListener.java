@@ -48,4 +48,13 @@ public interface GameEventListener {
 
     default void onGameOver(List<Player> ranking) {
     }
+
+    default void onPieceBlocked(Piece piece, String from, String to, Piece blocker) {
+    }
+
+    default void onMovedUpToBlock(Piece piece) {
+    }
+
+    default void onBlockedThrowIgnored(Piece piece) {
+    }
 }
