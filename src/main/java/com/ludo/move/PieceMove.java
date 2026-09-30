@@ -4,7 +4,6 @@ import com.ludo.event.GameEventListener;
 import com.ludo.model.Board;
 import com.ludo.model.Piece;
 import com.ludo.model.Player;
-import com.ludo.random.Dice;
 
 import java.util.List;
 
@@ -27,6 +26,11 @@ public abstract class PieceMove implements Move {
         captureOpponentsOnLandingCell(events);
     }
 
+    @Override
+    public boolean capturesOpponent() {
+        return !opponentsCaptured().isEmpty();
+    }
+
     public Piece getPiece() {
         return piece;
     }
@@ -36,10 +40,6 @@ public abstract class PieceMove implements Move {
             return List.of();
         }
         return board.opponentsAt(landingCell(), piece.getColour());
-    }
-
-    public boolean capturesOpponent() {
-        return !opponentsCaptured().isEmpty();
     }
 
     public boolean createsBlock() {
@@ -66,11 +66,11 @@ public abstract class PieceMove implements Move {
         }
     }
 
-    public boolean isEntry(){
+    public boolean isEntry() {
         return piece.isInBase();
     }
 
-    public boolean breaksBlock(){
+    public boolean breaksBlock() {
         return piece.isOnStandardPath() && board.isBlockAt(piece.getPosition());
     }
 }

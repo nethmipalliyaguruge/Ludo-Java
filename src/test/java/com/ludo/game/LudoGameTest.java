@@ -3,6 +3,7 @@ package com.ludo.game;
 import com.ludo.event.RecordingListener;
 import com.ludo.model.Colour;
 import com.ludo.model.Direction;
+import com.ludo.model.Piece;
 import com.ludo.model.Player;
 import com.ludo.random.FixedCoinToss;
 import com.ludo.random.FixedDice;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LudoGameTest {
     private Player red;
+    private Player blue;
     private List<Player> players;
     private Map<Colour, PlayerStrategy> strategies;
     private RecordingListener listener;
@@ -29,6 +31,7 @@ class LudoGameTest {
     @BeforeEach
     void setUp() {
         red = new Player(Colour.RED);
+        blue = new Player(Colour.BLUE);
         players = List.of(red, new Player(Colour.GREEN), new Player(Colour.YELLOW), new Player(Colour.BLUE));
         strategies = new EnumMap<>(Colour.class);
         for (Colour colour : Colour.values()) {
@@ -79,5 +82,17 @@ class LudoGameTest {
 
     private LudoGame gameWithDice(FixedDice dice) {
         return new LudoGame(players, strategies, dice, new FixedCoinToss(Direction.CLOCKWISE), listener);
+    }
+
+    @Test
+    void capturingAnOpponentGivesABonusRoll() {
+        Piece redOne = red.getPieces().get(0);
+        Piece blueOne = players.get(3).getPieces().getFirst();
+        redOne.moveToStart(26, Direction.CLOCKWISE);
+        blueOne.moveToStart(29, Direction.CLOCKWISE);
+        LudoGame game = gameWithDice(new FixedDice(3, 2));
+        game.playTurn(red);
+
+        assertEquals(List.of("RED rolled 3", "moved R1 26->29", "R1 captured B1", "RED rolled 2", "moved R1 29->31"), listener.getEvents());
     }
 }

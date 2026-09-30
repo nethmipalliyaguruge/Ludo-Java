@@ -73,9 +73,11 @@ public class LudoGame {
                 events.onThirdSixIgnored(player);
                 return;
             }
-            chooseMove(player, roll).execute(events);
+            Move move = chooseMove(player, roll);
+            boolean earnedBonusRoll = move.capturesOpponent();
+            move.execute(events);
             recordIfFinished(player);
-            rollAgain = roll == SIX && !player.hasWon();
+            rollAgain = (roll == SIX || earnedBonusRoll) && !player.hasWon();
         }
     }
 
