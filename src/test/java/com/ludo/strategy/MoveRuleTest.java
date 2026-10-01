@@ -1,6 +1,10 @@
 package com.ludo.strategy;
 
-import com.ludo.model.*;
+import com.ludo.model.Board;
+import com.ludo.model.Colour;
+import com.ludo.model.Direction;
+import com.ludo.model.Piece;
+import com.ludo.model.Player;
 import com.ludo.move.EnterBoardMove;
 import com.ludo.move.PieceMove;
 import com.ludo.move.StepMove;
@@ -13,17 +17,16 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 class MoveRuleTest {
-    private Player red;
-    private Board board;
+    private List<Piece> pieces;
     private PieceMove nearHome;
     private PieceMove farFromHome;
     private PieceMove entry;
 
     @BeforeEach
     void setUp() {
-        red = new Player(Colour.RED);
-        board = new Board(List.of(red));
-        List<Piece> pieces = red.getPieces();
+        Player red = new Player(Colour.RED);
+        Board board = new Board(List.of(red));
+        pieces = red.getPieces();
         pieces.get(0).moveToStart(20, Direction.CLOCKWISE);
         pieces.get(1).moveToStart(30, Direction.CLOCKWISE);
         nearHome = new StepMove(red, pieces.get(0), board, 1);
@@ -33,29 +36,47 @@ class MoveRuleTest {
 
     @Test
     void ruleThatCanDecideChoosesTheMove() {
-        MoveRule rules = new EntryRule(ClosestToHomeRule.anyMove());
+        MoveRule rules = new EntryRule(new ClosestToHomeRule());
 
         assertSame(entry, rules.choose(List.of(nearHome, entry)));
     }
 
     @Test
     void ruleThatCannotDecidePassesTheOptionsToTheNextRule() {
-        MoveRule rules = new EntryRule(options -> farFromHome);
-
-        assertSame(farFromHome, rules.choose(List.of(nearHome, farFromHome)));
-    }
-
-    @Test
-    void lastRuleOnlyLooksAtPreferredMovesWhenThereAreAny() {
-        MoveRule rules = ClosestToHomeRule.preferring(move -> move == farFromHome);
-
-        assertSame(farFromHome, rules.choose(List.of(nearHome, farFromHome)));
-    }
-
-    @Test
-    void lastRuleFallsBackToAllMovesWhenNoneArePreferred() {
-        MoveRule rules = ClosestToHomeRule.preferring(move -> false);
+        MoveRule rules = new EntryRule(new ClosestToHomeRule());
 
         assertSame(nearHome, rules.choose(List.of(farFromHome, nearHome)));
+    }
+
+    @Test
+    void withoutBlockRuleSkipsAMoveThatWouldCreateABlock() {
+        pieces.get(3).moveToStart(21, Direction.CLOCKWISE);
+        MoveRule rules = new ClosestToHomeWithoutBlockRule(new ClosestToHomeRule());
+
+        assertSame(farFromHome, rules.choose(List.of(nearHome, farFromHome)));
+    }
+
+    @Test
+    void withoutBlockRulePassesOnWhenEveryMoveCreatesABlock() {
+        pieces.get(3).moveToStart(21, Direction.CLOCKWISE);
+        MoveRule rules = new ClosestToHomeWithoutBlockRule(new ClosestToHomeRule());
+
+        assertSame(nearHome, rules.choose(List.of(nearHome)));
+    }
+
+    @Test
+    void keepingBlockRuleSkipsAMoveThatWouldBreakABlock() {
+        pieces.get(3).moveToStart(20, Direction.CLOCKWISE);
+        MoveRule rules = new ClosestToHomeKeepingBlockRule(new ClosestToHomeRule());
+
+        assertSame(farFromHome, rules.choose(List.of(nearHome, farFromHome)));
+    }
+
+    @Test
+    void keepingBlockRulePassesOnWhenEveryMoveBreaksABlock() {
+        pieces.get(3).moveToStart(20, Direction.CLOCKWISE);
+        MoveRule rules = new ClosestToHomeKeepingBlockRule(new ClosestToHomeRule());
+
+        assertSame(nearHome, rules.choose(List.of(nearHome)));
     }
 }

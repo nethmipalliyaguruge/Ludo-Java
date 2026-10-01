@@ -1,6 +1,7 @@
 package com.ludo.move;
 
 import com.ludo.model.Board;
+import com.ludo.model.Direction;
 import com.ludo.model.Piece;
 import com.ludo.model.Player;
 import com.ludo.random.CoinToss;
@@ -25,13 +26,22 @@ public class MoveGenerator {
     public List<PieceMove> legalMoves(Player player, int roll) {
         List<PieceMove> moves = new ArrayList<>();
         for (Piece piece : player.getPieces()) {
-            candidateMove(player, piece, roll).ifPresent(moves::add);
+            Optional<PieceMove> move = candidateMove(player, piece, roll);
+            if (move.isPresent()) {
+                moves.add(move.get());
+            }
         }
         for (List<Piece> block : board.blocksOf(player)) {
-            blockMove(player, block, roll).ifPresent(moves::add);
+            Optional<PieceMove> move = blockMove(player, block, roll);
+            if (move.isPresent()) {
+                moves.add(move.get());
+            }
         }
         if (moves.isEmpty()) {
-            blockedMove(player, roll).ifPresent(moves::add);
+            Optional<PieceMove> move = blockedMove(player, roll);
+            if (move.isPresent()) {
+                moves.add(move.get());
+            }
         }
         return moves;
     }
@@ -42,7 +52,8 @@ public class MoveGenerator {
             List<Piece> leaving = block.subList(1, block.size());
             int steps = UNITS_TO_BREAK_BLOCKADE / leaving.size();
             for (Piece piece : leaving) {
-                if (canWalk(piece, steps) && board.stepsToOpponentBlock(piece, steps).isEmpty()) {
+                boolean allowedToMove = piece.stepsFor(steps) > 0;
+                if (allowedToMove && canWalkFreely(piece, steps)) {
                     moves.add(new StepMove(player, piece, board, steps));
                 }
             }
@@ -55,7 +66,7 @@ public class MoveGenerator {
             return Optional.of(new EnterBoardMove(player, piece, board, coin));
         }
         int steps = piece.stepsFor(roll);
-        if (canWalk(piece, steps) && board.stepsToOpponentBlock(piece, steps).isEmpty()) {
+        if (canWalkFreely(piece, steps)) {
             return Optional.of(new StepMove(player, piece, board, steps));
         }
         return Optional.empty();
@@ -66,7 +77,8 @@ public class MoveGenerator {
             int steps = piece.stepsFor(roll);
             OptionalInt stepsToBlock = board.stepsToOpponentBlock(piece, steps);
             if (canWalk(piece, steps) && stepsToBlock.isPresent()) {
-                return Optional.of(new BlockedMove(player, piece, board, steps, stepsToBlock.getAsInt() - 1));
+                int stepsBeforeBlock = stepsToBlock.getAsInt() - 1;
+                return Optional.of(new BlockedMove(player, piece, board, steps, stepsBeforeBlock));
             }
         }
         return Optional.empty();
@@ -78,15 +90,33 @@ public class MoveGenerator {
         }
         BlockMove move = new BlockMove(player, block, board, roll);
         boolean movesAsAUnit = hasOppositeDirections(block) || move.capturesBlockade();
-        return movesAsAUnit && move.canTravel() ? Optional.of(move) : Optional.empty();
+        if (movesAsAUnit && move.canTravel()) {
+            return Optional.of(move);
+        }
+        return Optional.empty();
     }
 
     private boolean hasOppositeDirections(List<Piece> block) {
-        return block.stream().map(Piece::getDirection).distinct().count() > 1;
+        Direction firstDirection = block.getFirst().getDirection();
+        for (Piece piece : block) {
+            if (piece.getDirection() != firstDirection) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean allFreeToMove(List<Piece> block, int roll) {
-        return block.stream().allMatch(piece -> piece.stepsFor(roll) > 0);
+        for (Piece piece : block) {
+            if (piece.stepsFor(roll) == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean canWalkFreely(Piece piece, int steps) {
+        return canWalk(piece, steps) && board.stepsToOpponentBlock(piece, steps).isEmpty();
     }
 
     private boolean canWalk(Piece piece, int steps) {

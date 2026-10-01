@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Player {
-    private static final int PIECES_PER_PLAYER = 4;
+    public static final int PIECES_PER_PLAYER = 4;
 
     private final Colour colour;
     private final List<Piece> pieces;

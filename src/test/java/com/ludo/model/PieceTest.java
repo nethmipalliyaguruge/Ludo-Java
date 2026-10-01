@@ -122,6 +122,17 @@ class PieceTest {
     }
 
     @Test
+    void counterClockwisePieceLandingExactlyOnItsApproachDoesNotCountAsAPass() {
+        Piece red = new Piece(Colour.RED, 1);
+        red.moveToStart(26, Direction.COUNTER_CLOCKWISE);
+
+        red.move(2);
+
+        assertEquals("24", red.describeLocation());
+        assertEquals(58, red.stepsToHome());
+    }
+
+    @Test
     void counterClockwisePieceLandingOnApproachForTheSecondTimeEntersHomePathNext() {
         Piece red = new Piece(Colour.RED, 1);
         red.moveToStart(26, Direction.COUNTER_CLOCKWISE);
@@ -149,5 +160,27 @@ class PieceTest {
         red.move(5);
 
         assertEquals("22", red.describeLocation());
+    }
+
+    @Test
+    void clockwisePieceWithoutACaptureKeepsGoingPastItsApproach() {
+        Piece piece = new Piece(Colour.RED, 1);
+        piece.moveToStart(22, Direction.CLOCKWISE);
+
+        piece.move(4);
+
+        assertEquals("26", piece.describeLocation());
+    }
+
+    @Test
+    void returningToBaseClearsTheEffectAndTheDirection() {
+        Piece piece = new Piece(Colour.RED, 1);
+        piece.moveToStart(26, Direction.COUNTER_CLOCKWISE);
+        piece.applyCondition(new EnergisedCondition(4));
+
+        piece.returnToBase();
+
+        assertEquals(3, piece.stepsFor(3));
+        assertEquals(Direction.CLOCKWISE, piece.getDirection());
     }
 }

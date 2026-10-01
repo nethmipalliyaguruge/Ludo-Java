@@ -8,8 +8,6 @@ import com.ludo.move.PieceMove;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 public class BlueCyclicStrategy implements PlayerStrategy {
     private final MysteryCell mysteryCell;
@@ -22,10 +20,9 @@ public class BlueCyclicStrategy implements PlayerStrategy {
     @Override
     public PieceMove chooseMove(List<PieceMove> options, Player self) {
         List<PieceMove> inTurnOrder = inCyclicOrder(options, self);
-        PieceMove chosen = firstMatching(inTurnOrder, this::landsOnMysteryCounterClockwise)
-                .or(() -> firstMatching(inTurnOrder, move -> !landsOnMysteryClockwise(move)))
-                .orElse(inTurnOrder.getFirst());
-        nextPieceIndex = (self.getPieces().indexOf(chosen.getPiece()) + 1) % self.getPieces().size();
+        PieceMove chosen = choosePreferredMove(inTurnOrder);
+        List<Piece> pieces = self.getPieces();
+        nextPieceIndex = (pieces.indexOf(chosen.getPiece()) + 1) % pieces.size();
         return chosen;
     }
 
@@ -43,19 +40,26 @@ public class BlueCyclicStrategy implements PlayerStrategy {
         return ordered;
     }
 
-    private Optional<PieceMove> firstMatching(List<PieceMove> moves, Predicate<PieceMove> condition) {
-        return moves.stream().filter(condition).findFirst();
-    }
-
-    private boolean landsOnMysteryCounterClockwise(PieceMove move) {
-        return landsOnMysteryCell(move) && move.getPiece().getDirection() == Direction.COUNTER_CLOCKWISE;
-    }
-
-    private boolean landsOnMysteryClockwise(PieceMove move) {
-        return landsOnMysteryCell(move) && move.getPiece().getDirection() == Direction.CLOCKWISE;
+    private PieceMove choosePreferredMove(List<PieceMove> inTurnOrder) {
+        for (PieceMove move : inTurnOrder) {
+            if (landsOnMysteryCell(move) && isMoving(move, Direction.COUNTER_CLOCKWISE)) {
+                return move;
+            }
+        }
+        for (PieceMove move : inTurnOrder) {
+            boolean clockwiseOntoMysteryCell = landsOnMysteryCell(move) && isMoving(move, Direction.CLOCKWISE);
+            if (!clockwiseOntoMysteryCell) {
+                return move;
+            }
+        }
+        return inTurnOrder.getFirst();
     }
 
     private boolean landsOnMysteryCell(PieceMove move) {
         return move.landsOnStandardPath() && mysteryCell.isAt(move.landingCell());
+    }
+
+    private boolean isMoving(PieceMove move, Direction direction) {
+        return move.getPiece().getDirection() == direction;
     }
 }

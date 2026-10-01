@@ -13,6 +13,11 @@ class BlockMakerRule extends ChainedRule {
 
     @Override
     protected Optional<PieceMove> tryToChoose(List<PieceMove> options) {
-        return options.stream().filter(PieceMove::createsBlock).findFirst();
+        for (PieceMove move : options) {
+            if (move.createsBlock()) {
+                return Optional.of(move);
+            }
+        }
+        return Optional.empty();
     }
 }

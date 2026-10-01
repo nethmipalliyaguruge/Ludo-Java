@@ -8,8 +8,9 @@ import java.util.List;
 public class RedAggressiveStrategy implements PlayerStrategy {
     private final MoveRule rules =
             new CaptureClosestToHomeRule(
-                    new EntryRule(move -> !move.createsBlock(),
-                            ClosestToHomeRule.preferring(move -> !move.createsBlock())));
+                    new EntryWithoutBlockRule(
+                            new ClosestToHomeWithoutBlockRule(
+                                    new ClosestToHomeRule())));
 
     @Override
     public PieceMove chooseMove(List<PieceMove> options, Player self) {

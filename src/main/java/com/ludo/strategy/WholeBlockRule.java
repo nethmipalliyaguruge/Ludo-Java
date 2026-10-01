@@ -13,6 +13,11 @@ class WholeBlockRule extends ChainedRule {
 
     @Override
     protected Optional<PieceMove> tryToChoose(List<PieceMove> options) {
-        return options.stream().filter(PieceMove::movesWholeBlock).findFirst();
+        for (PieceMove move : options) {
+            if (move.movesWholeBlock()) {
+                return Optional.of(move);
+            }
+        }
+        return Optional.empty();
     }
 }

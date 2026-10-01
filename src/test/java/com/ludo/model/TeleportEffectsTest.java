@@ -79,4 +79,15 @@ class TeleportEffectsTest {
         assertEquals(6, red1.stepsFor(6));
         assertTrue(listener.getEvents().isEmpty());
     }
+
+    @Test
+    void pieceTurnedCounterClockwiseMustPassItsApproachAgain() {
+        red1.moveToStart(22, Direction.CLOCKWISE);
+        red1.move(4);
+        TeleportEffects effects = new TeleportEffects(new FixedPicker());
+
+        effects.applyOnArrival(red1, TeleportDestination.GAMMA, listener);
+
+        assertEquals(60, red1.stepsToHome());
+    }
 }

@@ -3,6 +3,8 @@ package com.ludo.model;
 import com.ludo.exception.IllegalMoveException;
 
 public class Piece {
+    private static final int STEPS_FROM_BASE_TO_HOME = Board.STANDARD_PATH_LENGTH + Board.HOME_PATH_LENGTH;
+
     private final Colour colour;
     private final int number;
     private PieceState state;
@@ -11,7 +13,6 @@ public class Piece {
     private PieceCondition condition = PieceCondition.NORMAL;
     private int homePathIndex;
     private int captureCount;
-    private static final int STEPS_FROM_BASE_TO_HOME = Board.STANDARD_PATH_LENGTH + Board.HOME_PATH_LENGTH;
     private int approachPasses;
 
     public Piece(Colour colour, int number) {
@@ -41,6 +42,22 @@ public class Piece {
         return captureCount;
     }
 
+    public boolean isInBase() {
+        return state == PieceState.BASE;
+    }
+
+    public boolean isOnStandardPath() {
+        return state == PieceState.STANDARD_PATH;
+    }
+
+    public boolean isInHomePath() {
+        return state == PieceState.HOME_PATH;
+    }
+
+    public boolean isHome() {
+        return state == PieceState.HOME;
+    }
+
     public void moveToStart(int startCell, Direction direction) {
         this.state = PieceState.STANDARD_PATH;
         this.position = startCell;
@@ -63,31 +80,29 @@ public class Piece {
     }
 
     public void returnToBase() {
+        state = PieceState.BASE;
+        direction = Direction.CLOCKWISE;
+        condition = PieceCondition.NORMAL;
         homePathIndex = 0;
         captureCount = 0;
         approachPasses = 0;
-        state = PieceState.BASE;
-        condition = PieceCondition.NORMAL;
     }
 
-    public boolean isInBase() {
-        return state == PieceState.BASE;
+    public void teleportTo(int cell) {
+        placeOnStandardPath(cell, "be teleported");
     }
 
-    public boolean isOnStandardPath() {
-        return state == PieceState.STANDARD_PATH;
-    }
-
-    public boolean isHome() {
-        return state == PieceState.HOME;
-    }
-
-    public boolean isInHomePath() {
-        return state == PieceState.HOME_PATH;
+    public void moveWithBlockTo(int cell) {
+        placeOnStandardPath(cell, "move with a block");
     }
 
     public void turnCounterClockwise() {
         direction = Direction.COUNTER_CLOCKWISE;
+        approachPasses = 0;
+    }
+
+    public void recordCapture() {
+        captureCount++;
     }
 
     public int stepsFor(int roll) {
@@ -110,22 +125,25 @@ public class Piece {
         return condition.mustReturnToBase();
     }
 
-    public void recordCapture() {
-        captureCount++;
-    }
-
     public int cellAfter(int steps) {
         return direction.move(position, steps);
     }
 
-    private int stepsToApproach() {
-        return direction.stepsBetween(getPosition(), colour.getApproachCell());
+    public boolean canMoveBy(int steps) {
+        if (isInHomePath()) {
+            return homePathIndex + steps <= Board.HOME_PATH_LENGTH;
+        }
+        return isOnStandardPath();
     }
 
     public boolean canEnterHomePath() {
         boolean hasCaptured = captureCount > 0;
         boolean readyForHomePath = direction == Direction.CLOCKWISE || approachPasses > 0;
         return hasCaptured && readyForHomePath;
+    }
+
+    public boolean staysOnStandardPathAfter(int steps) {
+        return !canEnterHomePath() || steps <= stepsToApproach();
     }
 
     public int stepsToHome() {
@@ -137,6 +155,19 @@ public class Piece {
         };
     }
 
+    public String describeLocation() {
+        return switch (state) {
+            case BASE -> "Base";
+            case STANDARD_PATH -> String.valueOf(position);
+            case HOME_PATH -> colour.name().toLowerCase() + "homepath" + homePathIndex;
+            case HOME -> "Home";
+        };
+    }
+
+    private int stepsToApproach() {
+        return direction.stepsBetween(position, colour.getApproachCell());
+    }
+
     private int stepsToHomeFromStandardPath() {
         int steps = stepsToApproach() + Board.HOME_PATH_LENGTH + 1;
         boolean mustGoRoundOnceMore = direction == Direction.COUNTER_CLOCKWISE && approachPasses == 0;
@@ -146,24 +177,11 @@ public class Piece {
         return steps;
     }
 
-    public boolean staysOnStandardPathAfter(int steps) {
-        return !canEnterHomePath() || steps <= stepsToApproach();
-    }
-
-    public boolean canMoveBy(int steps) {
-        if (isInHomePath()) {
-            return homePathIndex + steps <= Board.HOME_PATH_LENGTH;
+    private void countApproachPass(int steps) {
+        boolean movesBeyondApproach = steps > stepsToApproach();
+        if (movesBeyondApproach) {
+            approachPasses++;
         }
-        return isOnStandardPath();
-    }
-
-    public String describeLocation() {
-        return switch (state) {
-            case BASE -> "Base";
-            case STANDARD_PATH -> String.valueOf(position);
-            case HOME_PATH -> colour.name().toLowerCase() + "homepath" + homePathIndex;
-            case HOME -> "Home";
-        };
     }
 
     private void enterHomePath(int stepsPastApproach) {
@@ -179,23 +197,9 @@ public class Piece {
         }
     }
 
-    private void countApproachPass(int steps) {
-        boolean movesBeyondApproach = steps > stepsToApproach();
-        if (movesBeyondApproach) {
-            approachPasses++;
-        }
-    }
-
-    public void teleportTo(int cell) {
+    private void placeOnStandardPath(int cell, String action) {
         if (!isOnStandardPath()) {
-            throw new IllegalMoveException(getName() + " can only be teleported from the standard path");
-        }
-        position = cell;
-    }
-
-    public void moveWithBlockTo(int cell) {
-        if (!isOnStandardPath()) {
-            throw new IllegalMoveException(getName() + " can only move with a block on the standard path");
+            throw new IllegalMoveException(getName() + " can only " + action + " from the standard path");
         }
         position = cell;
     }

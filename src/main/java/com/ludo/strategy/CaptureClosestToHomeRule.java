@@ -3,7 +3,6 @@ package com.ludo.strategy;
 import com.ludo.model.Piece;
 import com.ludo.move.PieceMove;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,15 +14,16 @@ class CaptureClosestToHomeRule extends ChainedRule {
 
     @Override
     protected Optional<PieceMove> tryToChoose(List<PieceMove> options) {
-        return options.stream()
-                .filter(PieceMove::capturesOpponent)
-                .min(Comparator.comparingInt(CaptureClosestToHomeRule::closestCapturedOpponent));
-    }
-
-    private static int closestCapturedOpponent(PieceMove move) {
-        return move.opponentsCaptured().stream()
-                .mapToInt(Piece::stepsToHome)
-                .min()
-                .orElse(Integer.MAX_VALUE);
+        PieceMove bestCapture = null;
+        int bestDistance = Integer.MAX_VALUE;
+        for (PieceMove move : options) {
+            for (Piece opponent : move.opponentsCaptured()) {
+                if (opponent.stepsToHome() < bestDistance) {
+                    bestDistance = opponent.stepsToHome();
+                    bestCapture = move;
+                }
+            }
+        }
+        return Optional.ofNullable(bestCapture);
     }
 }

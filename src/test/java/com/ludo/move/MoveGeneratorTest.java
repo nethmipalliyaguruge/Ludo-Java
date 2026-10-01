@@ -84,4 +84,25 @@ class MoveGeneratorTest {
         assertEquals(2, moves.size());
         assertEquals(33, moves.getFirst().landingCell());
     }
+
+    @Test
+    void pieceCanJumpOverASingleOpponentPiece() {
+        Player blue = new Player(Colour.BLUE);
+        MoveGenerator twoPlayers = new MoveGenerator(new Board(List.of(red, blue)), new FixedCoinToss(Direction.CLOCKWISE));
+        red.getPieces().getFirst().moveToStart(26, Direction.CLOCKWISE);
+        blue.getPieces().getFirst().moveToStart(28, Direction.CLOCKWISE);
+
+        List<PieceMove> moves = twoPlayers.legalMoves(red, 4);
+
+        assertEquals(30, moves.getFirst().landingCell());
+    }
+
+    @Test
+    void pieceInBriefingIsNotForcedOutOfABlockade() {
+        red.getPieces().get(0).moveToStart(30, Direction.CLOCKWISE);
+        red.getPieces().get(1).moveToStart(30, Direction.CLOCKWISE);
+        red.getPieces().get(1).applyCondition(new BriefingCondition(4, 0));
+
+        assertTrue(generator.blockadeBreakingMoves(red).isEmpty());
+    }
 }

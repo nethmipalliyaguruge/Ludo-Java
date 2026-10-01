@@ -3,7 +3,12 @@ package com.ludo.output;
 import com.ludo.event.GameEventListener;
 import com.ludo.game.PieceStatus;
 import com.ludo.game.PlayerStatus;
-import com.ludo.model.*;
+import com.ludo.model.Colour;
+import com.ludo.model.Direction;
+import com.ludo.model.MysteryCell;
+import com.ludo.model.Piece;
+import com.ludo.model.Player;
+import com.ludo.model.TeleportDestination;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -11,7 +16,6 @@ import java.util.List;
 
 public class ConsoleReporter implements GameEventListener {
     private static final String DIVIDER = "============================";
-    private static final int PIECES_PER_PLAYER = 4;
 
     private final PrintStream out;
 
@@ -223,8 +227,8 @@ public class ConsoleReporter implements GameEventListener {
 
     private void printStatus(PlayerStatus status) {
         String colour = name(status.colour());
-        out.println(colour + " player now has " + status.piecesOnBoard() + "/" + PIECES_PER_PLAYER
-                + " pieces on the board and " + status.piecesInBase() + "/" + PIECES_PER_PLAYER
+        out.println(colour + " player now has " + status.piecesOnBoard() + "/" + Player.PIECES_PER_PLAYER
+                + " pieces on the board and " + status.piecesInBase() + "/" + Player.PIECES_PER_PLAYER
                 + " pieces on the base.");
         out.println(DIVIDER);
         out.println("Location of pieces " + colour);
@@ -236,8 +240,8 @@ public class ConsoleReporter implements GameEventListener {
 
     private void printPieceCounts(Player player) {
         out.println(name(player.getColour()) + " player now has " + player.countPiecesOnBoard() + "/"
-                + PIECES_PER_PLAYER + " pieces on the board and " + player.countPiecesInBase() + "/"
-                + PIECES_PER_PLAYER + " pieces on the base.");
+                + Player.PIECES_PER_PLAYER + " pieces on the board and " + player.countPiecesInBase() + "/"
+                + Player.PIECES_PER_PLAYER + " pieces on the base.");
     }
 
     private static String name(Colour colour) {

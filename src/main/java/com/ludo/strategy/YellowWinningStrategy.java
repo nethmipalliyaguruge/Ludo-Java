@@ -9,7 +9,7 @@ public class YellowWinningStrategy implements PlayerStrategy {
     private final MoveRule rules =
             new EntryRule(
                     new NeededCaptureRule(
-                            ClosestToHomeRule.anyMove()));
+                            new ClosestToHomeRule()));
 
     @Override
     public PieceMove chooseMove(List<PieceMove> options, Player self) {

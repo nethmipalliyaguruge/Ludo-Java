@@ -13,9 +13,12 @@ class NeededCaptureRule extends ChainedRule {
 
     @Override
     protected Optional<PieceMove> tryToChoose(List<PieceMove> options) {
-        return options.stream()
-                .filter(move -> move.getPiece().getCaptureCount() == 0)
-                .filter(PieceMove::capturesOpponent)
-                .findFirst();
+        for (PieceMove move : options) {
+            boolean stillNeedsACapture = move.getPiece().getCaptureCount() == 0;
+            if (stillNeedsACapture && move.capturesOpponent()) {
+                return Optional.of(move);
+            }
+        }
+        return Optional.empty();
     }
 }

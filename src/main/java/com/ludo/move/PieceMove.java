@@ -26,6 +26,14 @@ public abstract class PieceMove implements Move {
         captureOpponentsOnLandingCell(events);
     }
 
+    public abstract boolean landsOnStandardPath();
+
+    public abstract int landingCell();
+
+    protected abstract void performMove();
+
+    protected abstract void announceMove(GameEventListener events, String from);
+
     public Piece getPiece() {
         return piece;
     }
@@ -47,32 +55,8 @@ public abstract class PieceMove implements Move {
         return !opponentsCaptured().isEmpty();
     }
 
-
     public boolean createsBlock() {
-        return landsOnStandardPath()
-                && board.hasOwnPieceAt(landingCell(), piece.getColour());
-    }
-
-    public abstract boolean landsOnStandardPath();
-
-    public abstract int landingCell();
-
-    protected abstract void performMove();
-
-    protected abstract void announceMove(GameEventListener events, String from);
-
-    private void captureOpponentsOnLandingCell(GameEventListener events) {
-        if (!piece.isOnStandardPath()) {
-            return;
-        }
-        List<Piece> captured = board.opponentsAt(piece.getPosition(), piece.getColour());
-        for (Piece opponent : captured) {
-            opponent.returnToBase();
-            events.onCapture(owner, piece, opponent);
-        }
-        if (!captured.isEmpty()) {
-            movedPieces().forEach(Piece::recordCapture);
-        }
+        return landsOnStandardPath() && board.hasOwnPieceAt(landingCell(), piece.getColour());
     }
 
     public boolean isEntry() {
@@ -87,4 +71,19 @@ public abstract class PieceMove implements Move {
         return piece.isOnStandardPath() && board.isBlockAt(piece.getPosition());
     }
 
+    private void captureOpponentsOnLandingCell(GameEventListener events) {
+        if (!piece.isOnStandardPath()) {
+            return;
+        }
+        List<Piece> captured = board.opponentsAt(piece.getPosition(), piece.getColour());
+        for (Piece opponent : captured) {
+            opponent.returnToBase();
+            events.onCapture(owner, piece, opponent);
+        }
+        if (!captured.isEmpty()) {
+            for (Piece mover : movedPieces()) {
+                mover.recordCapture();
+            }
+        }
+    }
 }

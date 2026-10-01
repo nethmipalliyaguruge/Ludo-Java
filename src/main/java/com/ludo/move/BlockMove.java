@@ -6,7 +6,6 @@ import com.ludo.model.Direction;
 import com.ludo.model.Piece;
 import com.ludo.model.Player;
 
-import java.util.Comparator;
 import java.util.List;
 
 public class BlockMove extends PieceMove {
@@ -40,11 +39,6 @@ public class BlockMove extends PieceMove {
     }
 
     @Override
-    public List<Piece> movedPieces() {
-        return block;
-    }
-
-    @Override
     public boolean landsOnStandardPath() {
         return true;
     }
@@ -52,6 +46,21 @@ public class BlockMove extends PieceMove {
     @Override
     public int landingCell() {
         return cellAfter(steps);
+    }
+
+    @Override
+    public List<Piece> movedPieces() {
+        return block;
+    }
+
+    @Override
+    public boolean movesWholeBlock() {
+        return true;
+    }
+
+    @Override
+    public boolean breaksBlock() {
+        return false;
     }
 
     @Override
@@ -72,16 +81,12 @@ public class BlockMove extends PieceMove {
     }
 
     private static Piece pieceFurthestFromHome(List<Piece> block) {
-        return block.stream().max(Comparator.comparingInt(Piece::stepsToHome)).orElseThrow();
-    }
-
-    @Override
-    public boolean movesWholeBlock() {
-        return true;
-    }
-
-    @Override
-    public boolean breaksBlock() {
-        return false;
+        Piece furthest = block.getFirst();
+        for (Piece member : block) {
+            if (member.stepsToHome() > furthest.stepsToHome()) {
+                furthest = member;
+            }
+        }
+        return furthest;
     }
 }

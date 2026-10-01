@@ -1,6 +1,8 @@
 package com.ludo.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.OptionalInt;
 
 public class Board {
     public static final int STANDARD_PATH_LENGTH = 52;
@@ -41,19 +43,26 @@ public class Board {
     }
 
     public List<List<Piece>> blocksOf(Player player) {
-        Map<Integer, List<Piece>> piecesByCell = new LinkedHashMap<>();
+        List<List<Piece>> blocks = new ArrayList<>();
         for (Piece piece : player.getPieces()) {
             if (piece.isOnStandardPath()) {
-                piecesByCell.computeIfAbsent(piece.getPosition(), cell -> new ArrayList<>()).add(piece);
-            }
-        }
-        List<List<Piece>> blocks = new ArrayList<>();
-        for (List<Piece> pieces : piecesByCell.values()) {
-            if (pieces.size() >= MIN_PIECES_FOR_BLOCK) {
-                blocks.add(pieces);
+                List<Piece> together = ownPiecesAt(piece.getPosition(), player);
+                if (together.size() >= MIN_PIECES_FOR_BLOCK && !blocks.contains(together)) {
+                    blocks.add(together);
+                }
             }
         }
         return blocks;
+    }
+
+    private List<Piece> ownPiecesAt(int cell, Player player) {
+        List<Piece> together = new ArrayList<>();
+        for (Piece piece : player.getPieces()) {
+            if (piece.isOnStandardPath() && piece.getPosition() == cell) {
+                together.add(piece);
+            }
+        }
+        return together;
     }
 
     public List<Piece> opponentsAt(int cell, Colour ownColour) {

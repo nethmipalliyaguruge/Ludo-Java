@@ -1,17 +1,20 @@
 package com.ludo.game;
 
 import com.ludo.event.GameEventListener;
-import com.ludo.model.*;
+import com.ludo.model.Board;
+import com.ludo.model.Colour;
+import com.ludo.model.Piece;
+import com.ludo.model.Player;
 import com.ludo.move.Move;
 import com.ludo.move.MoveGenerator;
 import com.ludo.move.NoMove;
 import com.ludo.move.PieceMove;
+import com.ludo.model.MysteryCell;
 import com.ludo.random.CoinToss;
 import com.ludo.random.Dice;
 import com.ludo.strategy.PlayerStrategy;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +22,7 @@ public class LudoGame {
     private static final int SIX = 6;
     private static final int SIXES_BEFORE_ROLL_IS_IGNORED = 3;
     private static final int MAX_ROUNDS = 1000;
+    private static final int ROUNDS_WITHOUT_PROGRESS_FOR_STALEMATE = 50;
 
     private final List<Player> players;
     private final Map<Colour, PlayerStrategy> strategies;
@@ -29,7 +33,6 @@ public class LudoGame {
     private final MoveGenerator moveGenerator;
     private final TurnManager turnManager;
     private final List<Player> finishingOrder = new ArrayList<>();
-    private static final int ROUNDS_WITHOUT_PROGRESS_FOR_STALEMATE = 50;
 
     public LudoGame(List<Player> players, Map<Colour, PlayerStrategy> strategies,
                     Dice dice, CoinToss coin, MysteryCell mysteryCell, GameEventListener events) {
@@ -43,19 +46,6 @@ public class LudoGame {
         this.turnManager = new TurnManager(this.players);
     }
 
-    private List<Player> finalRanking() {
-        List<Player> ranking = new ArrayList<>(finishingOrder);
-        List<Player> unfinished = new ArrayList<>();
-        for (Player player : players) {
-            if (!finishingOrder.contains(player)) {
-                unfinished.add(player);
-            }
-        }
-        unfinished.sort(Comparator.comparingInt(Player::totalStepsToHome));
-        ranking.addAll(unfinished);
-        return ranking;
-    }
-
     public List<Player> play() {
         events.onGameStart(players);
         List<Player> roundOrder = turnManager.decideRoundOrder(dice, events);
@@ -66,7 +56,7 @@ public class LudoGame {
             round++;
             List<PlayerStatus> before = currentStatuses();
             playRound(roundOrder);
-            players.forEach(Player::endRound);
+            endRoundForEveryPlayer();
             List<PlayerStatus> after = currentStatuses();
             roundsWithoutProgress = after.equals(before) ? roundsWithoutProgress + 1 : 0;
             events.onRoundEnd(round, after);
@@ -100,24 +90,18 @@ public class LudoGame {
         }
     }
 
-    private void handleThirdSix(Player player) {
-        List<PieceMove> breakingMoves = moveGenerator.blockadeBreakingMoves(player);
-        if (breakingMoves.isEmpty()) {
-            events.onThirdSixIgnored(player);
-            return;
-        }
-        events.onBlockadeBroken(player);
-        for (PieceMove move : breakingMoves) {
-            perform(player, move);
+    private void playRound(List<Player> roundOrder) {
+        for (Player player : roundOrder) {
+            if (!player.hasWon() && !isOver()) {
+                playTurn(player);
+            }
         }
     }
 
-    private void perform(Player player, Move move) {
-        move.execute(events);
-        for (Piece piece : move.movedPieces()) {
-            mysteryCell.teleportIfLandedOn(piece, events);
+    private void endRoundForEveryPlayer() {
+        for (Player player : players) {
+            player.endRound();
         }
-        recordIfFinished(player);
     }
 
     private void applyBriefingRule(Player player, int roll) {
@@ -130,11 +114,15 @@ public class LudoGame {
         }
     }
 
-    private void playRound(List<Player> roundOrder) {
-        for (Player player : roundOrder) {
-            if (!player.hasWon() && !isOver()) {
-                playTurn(player);
-            }
+    private void handleThirdSix(Player player) {
+        List<PieceMove> breakingMoves = moveGenerator.blockadeBreakingMoves(player);
+        if (breakingMoves.isEmpty()) {
+            events.onThirdSixIgnored(player);
+            return;
+        }
+        events.onBlockadeBroken(player);
+        for (PieceMove move : breakingMoves) {
+            perform(player, move);
         }
     }
 
@@ -144,6 +132,14 @@ public class LudoGame {
             return new NoMove(player);
         }
         return strategies.get(player.getColour()).chooseMove(options, player);
+    }
+
+    private void perform(Player player, Move move) {
+        move.execute(events);
+        for (Piece piece : move.movedPieces()) {
+            mysteryCell.teleportIfLandedOn(piece, events);
+        }
+        recordIfFinished(player);
     }
 
     private void recordIfFinished(Player player) {
@@ -163,5 +159,31 @@ public class LudoGame {
             statuses.add(PlayerStatus.of(player));
         }
         return statuses;
+    }
+
+    private List<Player> finalRanking() {
+        List<Player> ranking = new ArrayList<>(finishingOrder);
+        List<Player> unfinished = new ArrayList<>();
+        for (Player player : players) {
+            if (!finishingOrder.contains(player)) {
+                unfinished.add(player);
+            }
+        }
+        while (!unfinished.isEmpty()) {
+            Player closest = closestToHome(unfinished);
+            ranking.add(closest);
+            unfinished.remove(closest);
+        }
+        return ranking;
+    }
+
+    private Player closestToHome(List<Player> candidates) {
+        Player closest = candidates.getFirst();
+        for (Player player : candidates) {
+            if (player.totalStepsToHome() < closest.totalStepsToHome()) {
+                closest = player;
+            }
+        }
+        return closest;
     }
 }

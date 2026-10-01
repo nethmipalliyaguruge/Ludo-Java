@@ -2,6 +2,7 @@ package com.ludo.move;
 
 import com.ludo.event.RecordingListener;
 import com.ludo.model.*;
+import com.ludo.random.FixedCoinToss;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,5 +45,28 @@ class PieceMoveTest {
         move.execute(listener);
 
         assertEquals(List.of("no move RED"), listener.getEvents());
+    }
+
+    @Test
+    void enteringTheBoardCapturesAnOpponentOnTheStartCell() {
+        Piece redOne = red.getPieces().getFirst();
+        Piece blueOne = blue.getPieces().getFirst();
+        blueOne.moveToStart(26, Direction.CLOCKWISE);
+
+        new EnterBoardMove(red, redOne, board, new FixedCoinToss(Direction.CLOCKWISE)).execute(listener);
+
+        assertTrue(blueOne.isInBase());
+        assertEquals(1, redOne.getCaptureCount());
+    }
+
+    @Test
+    void landingOnAlphaWithoutATeleportHasNoEffect() {
+        Piece redOne = red.getPieces().getFirst();
+        redOne.moveToStart(3, Direction.CLOCKWISE);
+
+        new StepMove(red, redOne, board, 4).execute(listener);
+
+        assertEquals(7, redOne.getPosition());
+        assertEquals(6, redOne.stepsFor(6));
     }
 }

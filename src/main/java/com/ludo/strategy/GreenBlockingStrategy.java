@@ -11,7 +11,8 @@ public class GreenBlockingStrategy implements PlayerStrategy {
                     new EntryRule(
                             new NeededCaptureRule(
                                     new WholeBlockRule(
-                                            ClosestToHomeRule.preferring(move -> !move.breaksBlock())))));
+                                            new ClosestToHomeKeepingBlockRule(
+                                                    new ClosestToHomeRule())))));
 
     @Override
     public PieceMove chooseMove(List<PieceMove> options, Player self) {
