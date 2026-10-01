@@ -100,4 +100,12 @@ class BlockMoveTest {
     private BlockMove blockMove(int roll) {
         return (BlockMove) blockMoves(roll).getFirst();
     }
+
+    @Test
+    void movingTheWholeBlockKeepsItTogether() {
+        BlockMove move = blockMove(6);
+
+        assertTrue(move.movesWholeBlock());
+        assertFalse(move.breaksBlock());
+    }
 }

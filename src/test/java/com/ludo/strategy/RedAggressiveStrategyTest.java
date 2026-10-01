@@ -52,4 +52,20 @@ class RedAggressiveStrategyTest {
 
         assertSame(entry, chosen);
     }
+
+    @Test
+    void capturesTheOpponentClosestToItsHome() {
+        Piece redOne = red.getPieces().get(0);
+        Piece redTwo = red.getPieces().get(1);
+        redOne.moveToStart(26, Direction.CLOCKWISE);
+        redTwo.moveToStart(6, Direction.CLOCKWISE);
+        blue.getPieces().get(0).moveToStart(29, Direction.CLOCKWISE);
+        blue.getPieces().get(1).moveToStart(9, Direction.CLOCKWISE);
+        PieceMove captureFarFromHome = new StepMove(red, redOne, board, 3);
+        PieceMove captureNearHome = new StepMove(red, redTwo, board, 3);
+
+        PieceMove chosen = strategy.chooseMove(List.of(captureFarFromHome, captureNearHome), red);
+
+        assertSame(captureNearHome, chosen);
+    }
 }
