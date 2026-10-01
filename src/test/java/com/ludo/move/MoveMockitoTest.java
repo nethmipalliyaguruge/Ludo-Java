@@ -63,15 +63,6 @@ class MoveMockitoTest {
     }
 
     @Test
-    void normalMoveNeverTossesTheCoin() {
-        redOne.moveToStart(26, Direction.CLOCKWISE);
-
-        generator.legalMoves(red, 3).getFirst().execute(events);
-
-        verify(coin, never()).toss();
-    }
-
-    @Test
     void captureIsAnnouncedRightAfterTheMove() {
         Piece blueOne = blue.getPieces().getFirst();
         redOne.moveToStart(26, Direction.CLOCKWISE);

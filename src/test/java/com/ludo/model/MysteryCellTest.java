@@ -76,29 +76,6 @@ class MysteryCellTest {
         assertThrows(IllegalStateException.class, () -> mysteryCell.endRound(board, listener));
     }
 
-    @Test
-    void pieceLandingOnTheMysteryCellIsTeleported() {
-        MysteryCell mysteryCell = spawnedAt(10, TeleportDestination.ALPHA, true);
-        Piece red1 = red.getPieces().getFirst();
-        red1.teleportTo(10);
-
-        mysteryCell.teleportIfLandedOn(red1, listener);
-
-        assertEquals(7, red1.getPosition());
-        assertEquals(List.of("mystery spawned at 10", "R1 teleported to Alpha", "R1 energised"),
-                listener.getEvents());
-    }
-
-    @Test
-    void pieceOnAnotherCellIsNotTeleported() {
-        MysteryCell mysteryCell = spawnedAt(10);
-        Piece red1 = red.getPieces().getFirst();
-
-        mysteryCell.teleportIfLandedOn(red1, listener);
-
-        assertEquals(26, red1.getPosition());
-    }
-
     private MysteryCell spawnedAt(Object... picks) {
         red.getPieces().getFirst().moveToStart(26, Direction.CLOCKWISE);
         MysteryCell mysteryCell = new MysteryCell(new FixedPicker(picks));

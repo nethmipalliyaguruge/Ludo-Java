@@ -72,8 +72,10 @@ public class LudoGame {
             events.onRoundEnd(round, after);
             mysteryCell.endRound(board, events);
         }
-        if (!isOver()) {
+        if (roundsWithoutProgress >= ROUNDS_WITHOUT_PROGRESS_FOR_STALEMATE) {
             events.onStalemate(round);
+        } else if (!isOver()) {
+            events.onRoundLimitReached(round);
         }
         events.onGameOver(finalRanking());
         return List.copyOf(finishingOrder);
@@ -94,7 +96,7 @@ public class LudoGame {
             Move move = chooseMove(player, roll);
             boolean earnedBonusRoll = move.capturesOpponent();
             perform(player, move);
-            rollAgain = (roll == SIX || earnedBonusRoll) && !player.hasWon();
+            rollAgain = (roll == SIX || earnedBonusRoll) && !move.ignoresThrow() && !player.hasWon();
         }
     }
 

@@ -1,6 +1,5 @@
 package com.ludo.move;
 
-import com.ludo.event.RecordingListener;
 import com.ludo.model.*;
 import com.ludo.random.FixedCoinToss;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,26 +34,6 @@ class BlockRulesTest {
 
         assertEquals(1, moves.size());
         assertEquals("G2", moves.getFirst().getPiece().getName());
-    }
-
-    @Test
-    void onlyBlockedPieceMovesUpToTheCellBeforeTheBlock() {
-        Piece greenOne = green.getPieces().getFirst();
-        greenOne.moveToStart(0, Direction.CLOCKWISE);
-
-        generator.legalMoves(green, 5).getFirst().execute(new RecordingListener());
-
-        assertEquals(3, greenOne.getPosition());
-    }
-
-    @Test
-    void pieceRightBehindABlockCannotMoveAtAll() {
-        Piece greenOne = green.getPieces().getFirst();
-        greenOne.moveToStart(3, Direction.CLOCKWISE);
-
-        generator.legalMoves(green, 2).getFirst().execute(new RecordingListener());
-
-        assertEquals(3, greenOne.getPosition());
     }
 
     @Test

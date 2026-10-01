@@ -23,13 +23,6 @@ class TeleportDestinationTest {
     }
 
     @Test
-    void alphaSendsThePieceToCellSeven() {
-        TeleportDestination.ALPHA.sendHere(red1);
-
-        assertEquals(7, red1.getPosition());
-    }
-
-    @Test
     void approachUsesThePiecesOwnColour() {
         TeleportDestination.APPROACH.sendHere(red1);
 

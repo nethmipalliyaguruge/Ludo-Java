@@ -48,6 +48,13 @@ class ConsoleReporterTest {
     }
 
     @Test
+    void roundLimitMessageShowsTheRoundsPlayed() {
+        reporter.onRoundLimitReached(1000);
+
+        assertTrue(output.toString().contains("stopped after 1000 rounds"));
+    }
+
+    @Test
     void mysteryCellSpawnIsReportedInTheBriefsFormat() {
         reporter.onMysteryCellSpawned(12, 4);
 

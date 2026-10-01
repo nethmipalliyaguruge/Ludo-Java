@@ -32,9 +32,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -137,6 +139,45 @@ class LudoGameMockitoTest {
         List<Player> ranking = rankingCaptor.getValue();
         assertEquals(4, ranking.size());
         assertTrue(ranking.containsAll(players));
+    }
+
+    @Test
+    void sixWithNoLegalMoveIsIgnoredAndPassesTheDice() {
+        Player green = players.get(1);
+        green.getPieces().get(0).moveToStart(26, Direction.CLOCKWISE);
+        green.getPieces().get(1).moveToStart(26, Direction.CLOCKWISE);
+        when(dice.roll()).thenReturn(6, 3);
+
+        game.playTurn(red);
+
+        verify(events).onNoMoveAvailable(red);
+        verify(dice, times(1)).roll();
+    }
+
+    @Test
+    void gameWhereNoPieceCanMoveEndsInAStalemate() {
+        when(dice.roll()).thenReturn(6, 5, 4, 3, 1);
+        LudoGame stuckGame = new LudoGame(players, strategies, dice, new FixedCoinToss(Direction.CLOCKWISE),
+                mock(MysteryCell.class), events);
+
+        stuckGame.play();
+
+        verify(events).onStalemate(50);
+        verify(events, never()).onRoundLimitReached(anyInt());
+    }
+
+    @Test
+    void gameThatKeepsMovingWithoutFinishingStopsAtTheRoundLimit() {
+        strategyPicksTheFirstOption();
+        when(dice.roll()).thenReturn(6, 5, 4, 3, 1);
+        red.getPieces().getFirst().moveToStart(26, Direction.CLOCKWISE);
+        LudoGame endlessGame = new LudoGame(players, strategies, dice, new FixedCoinToss(Direction.CLOCKWISE),
+                mock(MysteryCell.class), events);
+
+        endlessGame.play();
+
+        verify(events).onRoundLimitReached(1000);
+        verify(events, never()).onStalemate(anyInt());
     }
 
     private void strategyPicksTheFirstOption() {

@@ -73,11 +73,12 @@ public class MoveGenerator {
     }
 
     private Optional<PieceMove> blockMove(Player player, List<Piece> block, int roll) {
-        if (!hasOppositeDirections(block) || !allFreeToMove(block, roll)) {
+        if (!allFreeToMove(block, roll)) {
             return Optional.empty();
         }
         BlockMove move = new BlockMove(player, block, board, roll);
-        return move.canTravel() ? Optional.of(move) : Optional.empty();
+        boolean movesAsAUnit = hasOppositeDirections(block) || move.capturesBlockade();
+        return movesAsAUnit && move.canTravel() ? Optional.of(move) : Optional.empty();
     }
 
     private boolean hasOppositeDirections(List<Piece> block) {

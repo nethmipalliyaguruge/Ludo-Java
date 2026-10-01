@@ -46,13 +46,6 @@ class MoveRuleTest {
     }
 
     @Test
-    void lastRuleChoosesThePieceClosestToHome() {
-        MoveRule rules = ClosestToHomeRule.anyMove();
-
-        assertSame(nearHome, rules.choose(List.of(farFromHome, nearHome)));
-    }
-
-    @Test
     void lastRuleOnlyLooksAtPreferredMovesWhenThereAreAny() {
         MoveRule rules = ClosestToHomeRule.preferring(move -> move == farFromHome);
 

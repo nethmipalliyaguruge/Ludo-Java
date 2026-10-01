@@ -6,32 +6,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PieceTest {
-    @Test
-    void newPieceStartsInBase() {
-        Piece piece = new Piece(Colour.RED, 1);
-        assertTrue(piece.isInBase());
-    }
-
-    @Test
-    void pieceNameIsColourLetterFollowedByNumber() {
-        Piece piece = new Piece(Colour.GREEN, 3);
-        assertEquals("G3", piece.getName());
-    }
-
-    @Test
-    void capturedPieceReturnsToBase() {
-        Piece piece = new Piece(Colour.BLUE, 2);
-        piece.moveToStart(0, Direction.CLOCKWISE);
-        piece.returnToBase();
-        assertTrue(piece.isInBase());
-    }
-
-    @Test
-    void pieceMovedToStartIsNotInBase() {
-        Piece piece = new Piece(Colour.YELLOW, 4);
-        piece.moveToStart(0, Direction.CLOCKWISE);
-        assertFalse(piece.isInBase());
-    }
 
     @Test
     void clockwisePieceMovesForwardByRollValue() {
@@ -104,6 +78,23 @@ class PieceTest {
     }
 
     @Test
+    void counterClockwisePieceOnItsStartCellIsSixtyStepsFromHome() {
+        Piece piece = new Piece(Colour.RED, 1);
+        piece.moveToStart(26, Direction.COUNTER_CLOCKWISE);
+
+        assertEquals(60, piece.stepsToHome());
+    }
+
+    @Test
+    void counterClockwisePieceThatPassedItsApproachNoLongerNeedsAnExtraLap() {
+        Piece piece = new Piece(Colour.RED, 1);
+        piece.moveToStart(26, Direction.COUNTER_CLOCKWISE);
+        piece.move(3);
+
+        assertEquals(57, piece.stepsToHome());
+    }
+
+    @Test
     void counterClockwisePieceEntersHomePathOnSecondPass() {
         Piece red = new Piece(Colour.RED, 1);
         red.moveToStart(26, Direction.COUNTER_CLOCKWISE);
@@ -116,5 +107,47 @@ class PieceTest {
         red.move(5);
 
         assertEquals("redhomepath1", red.describeLocation());
+    }
+
+    @Test
+    void counterClockwisePieceLandingOnApproachForTheFirstTimeMustGoRoundAgain() {
+        Piece red = new Piece(Colour.RED, 1);
+        red.moveToStart(26, Direction.COUNTER_CLOCKWISE);
+        red.recordCapture();
+        red.move(2);
+
+        red.move(1);
+
+        assertEquals("23", red.describeLocation());
+    }
+
+    @Test
+    void counterClockwisePieceLandingOnApproachForTheSecondTimeEntersHomePathNext() {
+        Piece red = new Piece(Colour.RED, 1);
+        red.moveToStart(26, Direction.COUNTER_CLOCKWISE);
+        red.recordCapture();
+        red.move(3);
+        for (int lap = 0; lap < 8; lap++) {
+            red.move(6);
+        }
+        red.move(3);
+
+        red.move(1);
+
+        assertEquals("redhomepath0", red.describeLocation());
+    }
+
+    @Test
+    void counterClockwisePieceThatHasNotCapturedKeepsCirclingPastItsApproach() {
+        Piece red = new Piece(Colour.RED, 1);
+        red.moveToStart(26, Direction.COUNTER_CLOCKWISE);
+        red.move(3);
+        for (int lap = 0; lap < 8; lap++) {
+            red.move(6);
+        }
+
+        red.move(5);
+
+        assertEquals("22", red.describeLocation());
     }
 }

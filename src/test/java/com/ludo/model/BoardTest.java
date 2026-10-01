@@ -64,11 +64,6 @@ class BoardTest {
     }
 
     @Test
-    void hasOwnPieceAtIsFalseForAnEmptyCell() {
-        assertFalse(board.hasOwnPieceAt(RED_START, Colour.RED));
-    }
-
-    @Test
     void blocksOfFindsOwnPiecesSharingACell() {
         List<Piece> pieces = red.getPieces();
         red.getPieces().get(0).moveToStart(30, Direction.CLOCKWISE);

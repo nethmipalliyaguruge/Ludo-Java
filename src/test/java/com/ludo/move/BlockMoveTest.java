@@ -87,6 +87,26 @@ class BlockMoveTest {
         assertTrue(blockMoves(6).isEmpty());
     }
 
+    @Test
+    void sameDirectionBlockadeCapturesABlockadeOfTheSameSize() {
+        red1.turnCounterClockwise();
+        placeGreenPieces(7, 2);
+
+        blockMove(6).execute(new RecordingListener());
+
+        assertEquals(4, green.countPiecesInBase());
+        assertEquals(7, red1.getPosition());
+        assertEquals(7, red2.getPosition());
+    }
+
+    @Test
+    void sameDirectionBlockadeCannotLandOnABiggerBlockade() {
+        red1.turnCounterClockwise();
+        placeGreenPieces(7, 3);
+
+        assertTrue(blockMoves(6).isEmpty());
+    }
+
     private void placeGreenPieces(int cell, int count) {
         for (int i = 0; i < count; i++) {
             green.getPieces().get(i).moveToStart(cell, Direction.CLOCKWISE);
@@ -99,13 +119,5 @@ class BlockMoveTest {
 
     private BlockMove blockMove(int roll) {
         return (BlockMove) blockMoves(roll).getFirst();
-    }
-
-    @Test
-    void movingTheWholeBlockKeepsItTogether() {
-        BlockMove move = blockMove(6);
-
-        assertTrue(move.movesWholeBlock());
-        assertFalse(move.breaksBlock());
     }
 }

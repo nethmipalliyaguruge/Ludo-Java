@@ -68,4 +68,39 @@ class GreenBlockingStrategyTest {
 
         assertSame(wholeBlock, chosen);
     }
+
+    @Test
+    void pieceThatStillNeedsACaptureToGoHomeTakesIt() {
+        Player red = new Player(Colour.RED);
+        Board boardWithOpponent = new Board(List.of(green, red));
+        Piece greenOne = green.getPieces().get(0);
+        Piece greenTwo = green.getPieces().get(1);
+        greenOne.moveToStart(30, Direction.CLOCKWISE);
+        greenTwo.moveToStart(10, Direction.CLOCKWISE);
+        red.getPieces().getFirst().moveToStart(13, Direction.CLOCKWISE);
+        PieceMove plainMove = new StepMove(green, greenOne, boardWithOpponent, 3);
+        PieceMove neededCapture = new StepMove(green, greenTwo, boardWithOpponent, 3);
+
+        PieceMove chosen = strategy.chooseMove(List.of(plainMove, neededCapture), green);
+
+        assertSame(neededCapture, chosen);
+    }
+
+    @Test
+    void pieceThatAlreadyCapturedDoesNotChaseAnotherCapture() {
+        Player red = new Player(Colour.RED);
+        Board boardWithOpponent = new Board(List.of(green, red));
+        Piece greenOne = green.getPieces().get(0);
+        Piece greenTwo = green.getPieces().get(1);
+        greenOne.moveToStart(30, Direction.CLOCKWISE);
+        greenTwo.moveToStart(10, Direction.CLOCKWISE);
+        greenTwo.recordCapture();
+        red.getPieces().getFirst().moveToStart(13, Direction.CLOCKWISE);
+        PieceMove closerToHome = new StepMove(green, greenOne, boardWithOpponent, 3);
+        PieceMove extraCapture = new StepMove(green, greenTwo, boardWithOpponent, 3);
+
+        PieceMove chosen = strategy.chooseMove(List.of(extraCapture, closerToHome), green);
+
+        assertSame(closerToHome, chosen);
+    }
 }

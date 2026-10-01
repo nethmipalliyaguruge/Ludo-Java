@@ -95,4 +95,7 @@ public interface GameEventListener {
 
     default void onStalemate(int round) {
     }
+
+    default void onRoundLimitReached(int round) {
+    }
 }

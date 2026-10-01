@@ -12,6 +12,10 @@ public interface Move {
         return false;
     }
 
+    default boolean ignoresThrow() {
+        return false;
+    }
+
     default List<Piece> movedPieces() {
         return List.of();
     }

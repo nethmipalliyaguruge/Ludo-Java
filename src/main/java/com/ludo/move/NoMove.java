@@ -14,4 +14,9 @@ public class NoMove implements Move {
     public void execute(GameEventListener events) {
         events.onNoMoveAvailable(player);
     }
+
+    @Override
+    public boolean ignoresThrow() {
+        return true;
+    }
 }

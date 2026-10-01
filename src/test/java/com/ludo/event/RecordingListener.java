@@ -99,4 +99,19 @@ public class RecordingListener implements GameEventListener {
     public void onBlockadeBroken(Player player) {
         events.add("blockade broken " + player.getColour());
     }
+
+    @Override
+    public void onPieceBlocked(Piece piece, String from, String to, Piece blocker) {
+        events.add(piece.getName() + " blocked " + from + "->" + to + " by " + blocker.getName());
+    }
+
+    @Override
+    public void onMovedUpToBlock(Piece piece) {
+        events.add(piece.getName() + " moved up to block");
+    }
+
+    @Override
+    public void onBlockedThrowIgnored(Piece piece) {
+        events.add(piece.getName() + " blocked throw ignored");
+    }
 }

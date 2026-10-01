@@ -23,6 +23,11 @@ public class BlockedMove extends PieceMove {
     }
 
     @Override
+    public boolean ignoresThrow() {
+        return stepsBeforeBlock == 0;
+    }
+
+    @Override
     public int landingCell() {
         return piece.cellAfter(stepsBeforeBlock);
     }

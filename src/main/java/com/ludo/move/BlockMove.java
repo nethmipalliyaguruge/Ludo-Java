@@ -30,8 +30,13 @@ public class BlockMove extends PieceMove {
                 return false;
             }
         }
-        return !board.isOpponentBlockAt(landingCell(), piece.getColour())
-                || board.piecesAt(landingCell()).size() == block.size();
+        return !board.isOpponentBlockAt(landingCell(), piece.getColour()) || capturesBlockade();
+    }
+
+    public boolean capturesBlockade() {
+        return steps > 0
+                && board.isOpponentBlockAt(landingCell(), piece.getColour())
+                && board.piecesAt(landingCell()).size() == block.size();
     }
 
     @Override

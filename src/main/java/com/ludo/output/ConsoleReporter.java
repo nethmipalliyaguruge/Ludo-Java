@@ -182,8 +182,14 @@ public class ConsoleReporter implements GameEventListener {
 
     @Override
     public void onStalemate(int round) {
-        out.println("Stalemate after round " + round + ": no piece has moved for many rounds because blocks"
-                + " are stopping every remaining piece. Remaining players are ranked by distance to home.");
+        out.println("Stalemate after round " + round + ": no piece has moved for many rounds."
+                + " Remaining players are ranked by distance to home.");
+    }
+
+    @Override
+    public void onRoundLimitReached(int round) {
+        out.println("The game was stopped after " + round + " rounds without a result."
+                + " Remaining players are ranked by distance to home.");
     }
 
     @Override

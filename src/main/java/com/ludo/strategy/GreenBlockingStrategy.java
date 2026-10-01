@@ -9,8 +9,9 @@ public class GreenBlockingStrategy implements PlayerStrategy {
     private final MoveRule rules =
             new BlockMakerRule(
                     new EntryRule(
-                            new WholeBlockRule(
-                                    ClosestToHomeRule.preferring(move -> !move.breaksBlock()))));
+                            new NeededCaptureRule(
+                                    new WholeBlockRule(
+                                            ClosestToHomeRule.preferring(move -> !move.breaksBlock())))));
 
     @Override
     public PieceMove chooseMove(List<PieceMove> options, Player self) {

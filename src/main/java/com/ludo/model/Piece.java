@@ -131,10 +131,19 @@ public class Piece {
     public int stepsToHome() {
         return switch (state) {
             case BASE -> STEPS_FROM_BASE_TO_HOME;
-            case STANDARD_PATH -> stepsToApproach() + Board.HOME_PATH_LENGTH + 1;
+            case STANDARD_PATH -> stepsToHomeFromStandardPath();
             case HOME_PATH -> Board.HOME_PATH_LENGTH - homePathIndex;
             case HOME -> 0;
         };
+    }
+
+    private int stepsToHomeFromStandardPath() {
+        int steps = stepsToApproach() + Board.HOME_PATH_LENGTH + 1;
+        boolean mustGoRoundOnceMore = direction == Direction.COUNTER_CLOCKWISE && approachPasses == 0;
+        if (mustGoRoundOnceMore) {
+            steps = steps + Board.STANDARD_PATH_LENGTH;
+        }
+        return steps;
     }
 
     public boolean staysOnStandardPathAfter(int steps) {
@@ -171,8 +180,8 @@ public class Piece {
     }
 
     private void countApproachPass(int steps) {
-        int distance = stepsToApproach();
-        if (distance > 0 && steps >= distance) {
+        boolean movesBeyondApproach = steps > stepsToApproach();
+        if (movesBeyondApproach) {
             approachPasses++;
         }
     }
