@@ -19,6 +19,7 @@ public abstract class PieceMove implements Move {
     }
 
     @Override
+    // Template Method: every move follows the same steps; subclasses only fill in performMove and announceMove
     public final void execute(GameEventListener events) {
         String from = piece.describeLocation();
         performMove();

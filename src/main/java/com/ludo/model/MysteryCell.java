@@ -48,6 +48,7 @@ public class MysteryCell {
         if (board.hasPiecesOnStandardPath()) {
             roundsWithPiecesOnBoard++;
         }
+        // T-10: the first mystery cell appears after two rounds with pieces on the standard path
         if (roundsWithPiecesOnBoard == ROUNDS_BEFORE_FIRST_SPAWN) {
             spawn(board, events);
         }
@@ -72,6 +73,7 @@ public class MysteryCell {
     private List<Integer> emptyCellsExceptCurrent(Board board) {
         List<Integer> cells = new ArrayList<>();
         for (int candidate = 0; candidate < Board.STANDARD_PATH_LENGTH; candidate++) {
+            // T-10: it must spawn on an empty cell and never in the same place twice in a row
             if (!isAt(candidate) && board.piecesAt(candidate).isEmpty()) {
                 cells.add(candidate);
             }

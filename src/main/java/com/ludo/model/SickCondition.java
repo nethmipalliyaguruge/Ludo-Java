@@ -4,6 +4,7 @@ public record SickCondition(int fullRoundsLeft) implements PieceCondition {
 
     @Override
     public int stepsFor(int roll) {
+        // Integer division rounds down, so a roll of 1 means the piece cannot move
         return roll / 2;
     }
 

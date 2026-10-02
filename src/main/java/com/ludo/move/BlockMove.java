@@ -14,9 +14,11 @@ public class BlockMove extends PieceMove {
     private final int steps;
 
     public BlockMove(Player owner, List<Piece> block, Board board, int roll) {
+        // T-4: the block moves in the direction of the piece furthest from home
         super(owner, pieceFurthestFromHome(block), board);
         this.block = List.copyOf(block);
         this.direction = piece.getDirection();
+        // T-4: the roll is shared between the pieces, rounded down
         this.steps = roll / block.size();
     }
 
@@ -29,6 +31,7 @@ public class BlockMove extends PieceMove {
                 return false;
             }
         }
+        // T-8: it may land on an opponent block only if it is the same size
         return !board.isOpponentBlockAt(landingCell(), piece.getColour()) || capturesBlockade();
     }
 

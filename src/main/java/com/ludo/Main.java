@@ -21,6 +21,7 @@ public class Main {
     private static final long DEFAULT_SEED = 42L;
 
     public static void main(String[] args) {
+        // The same seed always replays the same game
         long seed = args.length > 0 ? Long.parseLong(args[0]) : DEFAULT_SEED;
         Random random = new Random(seed);
         MysteryCell mysteryCell = new MysteryCell(new RandomPicker(random));
@@ -32,6 +33,7 @@ public class Main {
             strategies.put(colour, StrategyFactory.forColour(colour, mysteryCell));
         }
 
+        // Concrete classes are only created here; everything else depends on interfaces
         LudoGame game = new LudoGame(players, strategies,
                 new RandomDice(random), new RandomCoinToss(random), mysteryCell, new ConsoleReporter(System.out));
         game.play();

@@ -14,6 +14,7 @@ abstract class ChainedRule implements MoveRule {
 
     @Override
     public final PieceMove choose(List<PieceMove> options) {
+        // Chain of Responsibility: decide here, or pass the moves to the next rule
         Optional<PieceMove> chosen = tryToChoose(options);
         if (chosen.isPresent()) {
             return chosen.get();

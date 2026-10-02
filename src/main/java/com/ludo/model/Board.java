@@ -85,9 +85,11 @@ public class Board {
     }
 
     public boolean isOpponentBlockAt(int cell, Colour ownColour) {
+        // All pieces in a block share one colour, so checking the first piece is enough
         return isBlockAt(cell) && piecesAt(cell).getFirst().getColour() != ownColour;
     }
 
+    // T-3: returns how many steps away the first opponent block is, so the piece can stop in front of it
     public OptionalInt stepsToOpponentBlock(Piece piece, int steps) {
         if (!piece.isOnStandardPath()) {
             return OptionalInt.empty();

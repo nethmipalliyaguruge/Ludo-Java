@@ -22,6 +22,7 @@ public class BlueCyclicStrategy implements PlayerStrategy {
         List<PieceMove> inTurnOrder = inCyclicOrder(options, self);
         PieceMove chosen = choosePreferredMove(inTurnOrder);
         List<Piece> pieces = self.getPieces();
+        // Next turn starts from the piece after the one just moved (B1, B2, B3, B4, B1, ...)
         nextPieceIndex = (pieces.indexOf(chosen.getPiece()) + 1) % pieces.size();
         return chosen;
     }
@@ -42,11 +43,13 @@ public class BlueCyclicStrategy implements PlayerStrategy {
 
     private PieceMove choosePreferredMove(List<PieceMove> inTurnOrder) {
         for (PieceMove move : inTurnOrder) {
+            // Counter-clockwise pieces aim for the mystery cell
             if (landsOnMysteryCell(move) && isMoving(move, Direction.COUNTER_CLOCKWISE)) {
                 return move;
             }
         }
         for (PieceMove move : inTurnOrder) {
+            // Clockwise pieces avoid the mystery cell if another move is possible
             boolean clockwiseOntoMysteryCell = landsOnMysteryCell(move) && isMoving(move, Direction.CLOCKWISE);
             if (!clockwiseOntoMysteryCell) {
                 return move;

@@ -11,6 +11,7 @@ public enum Direction {
     }
 
     public int move(int fromCell, int steps) {
+        // floorMod keeps the result in 0-51 when moving backwards past cell 0 (plain % could give a negative number)
         return Math.floorMod(fromCell + sign * steps, Board.STANDARD_PATH_LENGTH);
     }
 

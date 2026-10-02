@@ -37,6 +37,7 @@ public class MoveGenerator {
                 moves.add(move.get());
             }
         }
+        // T-3: a piece may only stop in front of a block when no other move is possible
         if (moves.isEmpty()) {
             Optional<PieceMove> move = blockedMove(player, roll);
             if (move.isPresent()) {
@@ -49,9 +50,11 @@ public class MoveGenerator {
     public List<PieceMove> blockadeBreakingMoves(Player player) {
         List<PieceMove> moves = new ArrayList<>();
         for (List<Piece> block : board.blocksOf(player)) {
+            // T-6: one piece stays, the others share six cells (6, 3 + 3 or 2 + 2 + 2)
             List<Piece> leaving = block.subList(1, block.size());
             int steps = UNITS_TO_BREAK_BLOCKADE / leaving.size();
             for (Piece piece : leaving) {
+                // A piece in a briefing cannot move, even to break a blockade (T-13)
                 boolean allowedToMove = piece.stepsFor(steps) > 0;
                 if (allowedToMove && canWalkFreely(piece, steps)) {
                     moves.add(new StepMove(player, piece, board, steps));
@@ -89,6 +92,7 @@ public class MoveGenerator {
             return Optional.empty();
         }
         BlockMove move = new BlockMove(player, block, board, roll);
+        // T-4: mixed-direction blocks move together; T-8: any block may move to capture a same-size blockade
         boolean movesAsAUnit = hasOppositeDirections(block) || move.capturesBlockade();
         if (movesAsAUnit && move.canTravel()) {
             return Optional.of(move);

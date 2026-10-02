@@ -24,6 +24,7 @@ public class BlockedMove extends PieceMove {
 
     @Override
     public boolean ignoresThrow() {
+        // The piece is right behind the block, so the throw is ignored (Rule 7)
         return stepsBeforeBlock == 0;
     }
 

@@ -79,6 +79,7 @@ public class Piece {
         }
     }
 
+    // T-9: a captured piece loses all its information
     public void returnToBase() {
         state = PieceState.BASE;
         direction = Direction.CLOCKWISE;
@@ -96,6 +97,7 @@ public class Piece {
         placeOnStandardPath(cell, "move with a block");
     }
 
+    // Passes made while moving clockwise do not count once the piece turns (Gamma, T-14)
     public void turnCounterClockwise() {
         direction = Direction.COUNTER_CLOCKWISE;
         approachPasses = 0;
@@ -136,6 +138,7 @@ public class Piece {
         return isOnStandardPath();
     }
 
+    // T-7: a capture is needed; T-1: a counter-clockwise piece also needs one earlier pass of its approach
     public boolean canEnterHomePath() {
         boolean hasCaptured = captureCount > 0;
         boolean readyForHomePath = direction == Direction.CLOCKWISE || approachPasses > 0;
@@ -170,6 +173,7 @@ public class Piece {
 
     private int stepsToHomeFromStandardPath() {
         int steps = stepsToApproach() + Board.HOME_PATH_LENGTH + 1;
+        // A counter-clockwise piece that has not passed its approach yet still has a full lap to go
         boolean mustGoRoundOnceMore = direction == Direction.COUNTER_CLOCKWISE && approachPasses == 0;
         if (mustGoRoundOnceMore) {
             steps = steps + Board.STANDARD_PATH_LENGTH;
@@ -178,6 +182,7 @@ public class Piece {
     }
 
     private void countApproachPass(int steps) {
+        // Landing exactly on the approach is not a pass; only moving beyond it counts (T-1)
         boolean movesBeyondApproach = steps > stepsToApproach();
         if (movesBeyondApproach) {
             approachPasses++;
@@ -187,6 +192,7 @@ public class Piece {
     private void enterHomePath(int stepsPastApproach) {
         state = PieceState.HOME_PATH;
         homePathIndex = 0;
+        // The first step past the approach lands on homepath0
         advanceInHomePath(stepsPastApproach - 1);
     }
 

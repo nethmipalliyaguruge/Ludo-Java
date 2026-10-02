@@ -14,6 +14,7 @@ class NeededCaptureRule extends ChainedRule {
     @Override
     protected Optional<PieceMove> tryToChoose(List<PieceMove> options) {
         for (PieceMove move : options) {
+            // T-7: a piece without a capture cannot enter its home straight
             boolean stillNeedsACapture = move.getPiece().getCaptureCount() == 0;
             if (stillNeedsACapture && move.capturesOpponent()) {
                 return Optional.of(move);

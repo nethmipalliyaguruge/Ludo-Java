@@ -6,6 +6,7 @@ import com.ludo.move.PieceMove;
 import java.util.List;
 
 public class RedAggressiveStrategy implements PlayerStrategy {
+    // Capture first, then enter without making a block, then move closest to home avoiding blocks
     private final MoveRule rules =
             new CaptureClosestToHomeRule(
                     new EntryWithoutBlockRule(

@@ -29,6 +29,7 @@ public enum TeleportDestination {
     }
 
     static int cellFromYellowApproach(int distance) {
+        // T-11: Alpha, Beta and Gamma are counted from the Yellow approach cell, which counts as zero
         return (Colour.YELLOW.getApproachCell() + distance) % Board.STANDARD_PATH_LENGTH;
     }
 }

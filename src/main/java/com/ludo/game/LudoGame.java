@@ -58,8 +58,10 @@ public class LudoGame {
             playRound(roundOrder);
             endRoundForEveryPlayer();
             List<PlayerStatus> after = currentStatuses();
+            // Nothing changed this round, so count it towards a stalemate
             roundsWithoutProgress = after.equals(before) ? roundsWithoutProgress + 1 : 0;
             events.onRoundEnd(round, after);
+            // The mystery cell timer only moves on at the end of a full round
             mysteryCell.endRound(board, events);
         }
         if (roundsWithoutProgress >= ROUNDS_WITHOUT_PROGRESS_FOR_STALEMATE) {
@@ -77,15 +79,19 @@ public class LudoGame {
         while (rollAgain) {
             int roll = dice.roll();
             events.onRoll(player, roll);
+            // Every roll counts towards the three 3s rule for pieces in a briefing (T-13)
             applyBriefingRule(player, roll);
             sixesInARow = (roll == SIX) ? sixesInARow + 1 : 0;
+            // Rule 4 and T-6: the third six in a row is ignored, or breaks a blockade
             if (sixesInARow == SIXES_BEFORE_ROLL_IS_IGNORED) {
                 handleThirdSix(player);
                 return;
             }
             Move move = chooseMove(player, roll);
+            // Checked before the move runs, because the captured piece is gone afterwards
             boolean earnedBonusRoll = move.capturesOpponent();
             perform(player, move);
+            // Another roll after a six (Rule 4) or a capture (T-2), unless the throw was ignored (Rule 7)
             rollAgain = (roll == SIX || earnedBonusRoll) && !move.ignoresThrow() && !player.hasWon();
         }
     }
@@ -150,6 +156,7 @@ public class LudoGame {
     }
 
     private boolean isOver() {
+        // The game ends when only one player is still playing
         return finishingOrder.size() >= players.size() - 1;
     }
 

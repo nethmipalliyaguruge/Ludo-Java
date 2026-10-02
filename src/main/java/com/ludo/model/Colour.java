@@ -1,6 +1,7 @@
 package com.ludo.model;
 
 public enum Colour {
+    // Cells are numbered 0-51 clockwise from Yellow's X; each approach cell is two cells before its X
     RED("R", 26, 24), GREEN("G", 39, 37), YELLOW("Y", 0, 50), BLUE("B", 13, 11);
 
     private final String letter;

@@ -24,6 +24,7 @@ public class TeleportEffects {
     }
 
     private void energiseOrSicken(Piece piece, GameEventListener events) {
+        // T-12: energised or sick, each with equal chance
         boolean energised = picker.pickOneOf(List.of(true, false));
         if (energised) {
             piece.applyCondition(new EnergisedCondition(PieceCondition.ROUNDS_OF_EFFECT));
@@ -44,6 +45,7 @@ public class TeleportEffects {
             piece.turnCounterClockwise();
             events.onTurnedCounterClockwise(piece);
         } else {
+            // T-14: a counter-clockwise piece is sent on to Beta and gets its briefing
             TeleportDestination.BETA.sendHere(piece);
             events.onSentFromGammaToBeta(piece);
             sendToBriefing(piece, events);

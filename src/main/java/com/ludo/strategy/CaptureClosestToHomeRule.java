@@ -18,6 +18,7 @@ class CaptureClosestToHomeRule extends ChainedRule {
         int bestDistance = Integer.MAX_VALUE;
         for (PieceMove move : options) {
             for (Piece opponent : move.opponentsCaptured()) {
+                // Red prefers capturing the opponent piece that is closest to its own home
                 if (opponent.stepsToHome() < bestDistance) {
                     bestDistance = opponent.stepsToHome();
                     bestCapture = move;
