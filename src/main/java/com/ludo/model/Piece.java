@@ -135,7 +135,15 @@ public class Piece {
         if (isInHomePath()) {
             return homePathIndex + steps <= Board.HOME_PATH_LENGTH;
         }
-        return isOnStandardPath();
+        if (!isOnStandardPath()) {
+            return false;
+        }
+        if (staysOnStandardPathAfter(steps)) {
+            return true;
+        }
+        // Rule 10: a piece entering its home straight must not go past Home (only possible when energised)
+        int stepsPastApproach = steps - stepsToApproach();
+        return stepsPastApproach <= Board.HOME_PATH_LENGTH + 1;
     }
 
     // T-7: a capture is needed; T-1: a counter-clockwise piece also needs one earlier pass of its approach

@@ -64,6 +64,27 @@ class PieceTest {
     }
 
     @Test
+    void energisedPieceCannotOvershootHomeWhenEnteringTheHomePath() {
+        Piece piece = new Piece(Colour.RED, 1);
+        piece.moveToStart(22, Direction.CLOCKWISE);
+        piece.recordCapture();
+        piece.applyCondition(new EnergisedCondition(4));
+
+        assertFalse(piece.canMoveBy(piece.stepsFor(6)));
+    }
+
+    @Test
+    void pieceCanReachHomeExactlyFromTheStandardPath() {
+        Piece piece = new Piece(Colour.RED, 1);
+        piece.moveToStart(22, Direction.CLOCKWISE);
+        piece.recordCapture();
+
+        piece.move(8);
+
+        assertTrue(piece.isHome());
+    }
+
+    @Test
     void movingPieceInBaseThrowsIllegalMoveException() {
         Piece piece = new Piece(Colour.RED, 4);
         assertThrows(IllegalMoveException.class, () -> piece.move(3));
