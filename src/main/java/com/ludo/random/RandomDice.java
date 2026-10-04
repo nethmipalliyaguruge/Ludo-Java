@@ -2,16 +2,24 @@ package com.ludo.random;
 
 import java.util.Random;
 
-public class RandomDice implements Dice {
+// Singleton: the game has exactly one real dice. It is still passed to LudoGame
+// through the Dice interface, so tests can replace it with a FixedDice or a mock.
+public final class RandomDice implements Dice {
     private static final int FACES = 6;
+    private static RandomDice instance;
+
     private final Random random;
 
-    public RandomDice(long seed) {
-        this(new Random(seed));
+    private RandomDice(Random random) {
+        this.random = random;
     }
 
-    public RandomDice(Random random) {
-        this.random = random;
+    // The first call creates the dice; later calls return the same dice
+    public static RandomDice getInstance(Random random) {
+        if (instance == null) {
+            instance = new RandomDice(random);
+        }
+        return instance;
     }
 
     @Override

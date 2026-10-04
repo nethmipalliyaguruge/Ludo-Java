@@ -2,13 +2,15 @@ package com.ludo.random;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Random;
+
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RandomDiceTest {
     @Test
     void rollIsAlwaysBetweenOneAndSix() {
-        Dice dice = new RandomDice(42L);
+        Dice dice = RandomDice.getInstance(new Random(42L));
 
         for (int i = 0; i < 1000; i++) {
             int value = dice.roll();
@@ -17,12 +19,10 @@ class RandomDiceTest {
     }
 
     @Test
-    void diceWithSameSeedProduceSameSequenceOfRolls() {
-        Dice diceA = new RandomDice(42L);
-        Dice diceB = new RandomDice(42L);
+    void thereIsOnlyEverOneDice() {
+        Dice first = RandomDice.getInstance(new Random(1L));
+        Dice second = RandomDice.getInstance(new Random(2L));
 
-        for (int i = 0; i < 10; i++) {
-            assertEquals(diceA.roll(), diceB.roll());
-        }
+        assertSame(first, second);
     }
 }

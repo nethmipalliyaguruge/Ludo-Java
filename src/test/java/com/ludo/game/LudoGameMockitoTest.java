@@ -11,7 +11,7 @@ import com.ludo.random.Dice;
 import com.ludo.random.FixedCoinToss;
 import com.ludo.random.FixedPicker;
 import com.ludo.random.RandomCoinToss;
-import com.ludo.random.RandomDice;
+import com.ludo.random.SeededDice;
 import com.ludo.random.RandomPicker;
 import com.ludo.strategy.PlayerStrategy;
 import org.junit.jupiter.api.BeforeEach;
@@ -129,7 +129,7 @@ class LudoGameMockitoTest {
     void finishedGameReportsAFullRankingOfAllPlayers() {
         strategyPicksTheFirstOption();
         Random random = new Random(42L);
-        LudoGame wholeGame = new LudoGame(players, strategies, new RandomDice(random),
+        LudoGame wholeGame = new LudoGame(players, strategies, new SeededDice(random),
                 new RandomCoinToss(random), new MysteryCell(new RandomPicker(random)), events);
 
         wholeGame.play();

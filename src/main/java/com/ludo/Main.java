@@ -35,7 +35,7 @@ public class Main {
 
         // Concrete classes are only created here; everything else depends on interfaces
         LudoGame game = new LudoGame(players, strategies,
-                new RandomDice(random), new RandomCoinToss(random), mysteryCell, new ConsoleReporter(System.out));
+                RandomDice.getInstance(random), new RandomCoinToss(random), mysteryCell, new ConsoleReporter(System.out));
         game.play();
     }
 }
